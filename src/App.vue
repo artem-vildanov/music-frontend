@@ -1,7 +1,8 @@
 <template>
   <header>
     <nav class="navbar bg-body-tertiary">
-      <ul class="navbar-nav">
+      <div class="container-fluid">
+        <ul class="navbar-nav">
         <li class="nav-item">
           <RouterLink class="nav-link active" to="/">Home</RouterLink>
         </li>
@@ -11,7 +12,8 @@
         <li class="nav-item">
           <RouterLink class="nav-link active" to="/signup">Signup</RouterLink>
         </li>
-      </ul>      
+        </ul>
+      </div>      
     </nav>
   </header>
 
