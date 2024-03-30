@@ -1,11 +1,11 @@
 <template>
-    <div class="fs-large fw-bold m-4">
-        Signup
-    </div>
+    
 </template>
 
 <script>
-
+    export default {
+        name: "FavouriteSongs"
+    }
 </script>
 
 <style scoped>
