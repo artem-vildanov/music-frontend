@@ -2,8 +2,8 @@
     <div class="album-box">
         <img :src="imageSource">
         <div class="album-box__album-info">
-            <div>{{ albumInfo.name }}</div>
-            <div>{{ albumInfo.artistName }}</div>
+            <div>{{ album.name }}</div>
+            <div>{{ album.artistName }}</div>
         </div>
         <ul class="album-box__album-songs">
             <template v-for="song in albumSongs">
@@ -11,7 +11,6 @@
             </template>
         </ul>
     </div>
-
 </template>
 
 <script>
@@ -32,12 +31,12 @@
         },
 
         props: [
-            'albumInfo'
+            'album'
         ],
 
         computed: {
             imageSource() {
-                return `http://music.local:9006/photo${this.albumInfo.photo_path}`
+                return `http://music.local:9006/photo${this.album.photo_path}`
             },
         },
 
@@ -47,7 +46,7 @@
 
         methods: {
             getAlbumSongs() {
-                api.get(`http://music.local/api/albums/${this.albumInfo.id}/songs/album-songs`)
+                api.get(`http://music.local/api/albums/${this.album.id}/songs/album-songs`)
                 .then( res => {
                     console.log(res.data)
                     this.albumSongs = res.data
