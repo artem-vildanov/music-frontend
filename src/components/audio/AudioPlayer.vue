@@ -1,7 +1,7 @@
 <template>
     <div>
         <audio controls>
-            <source :src="{ this. }" type="audio/mpeg" />
+            <!-- <source :src="{ this. }" type="audio/mpeg" /> -->
         </audio>
     </div>
 </template>

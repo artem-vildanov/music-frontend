@@ -1,3 +1,6 @@
+<script setup>
+import SingleAlbum from '../album/SingleAlbum.vue';
+</script>
 <template>
     <div class="artist-box">
         <img :src="imageSource">
@@ -13,14 +16,9 @@
 </template>
 
 <script>
-import SingleAlbum from '../album/SingleAlbum.vue';
 import api from "../../api";
     export default {
         name: "SingleArtist",
-
-        components: [
-            SingleAlbum,
-        ],
 
         data() {
             return {
@@ -38,16 +36,16 @@ import api from "../../api";
 
         computed: {
             imageSource() {
-                return `http://music.local:9006/photo${this.artist.photo_path}`
+                return `http://music.local:9006/photo/${this.artist.photo_path}`
             }
         },
 
         methods: {
             getArtistAlbums() {
-                api.get(`http://music.local/albums/created-by-artist/${this.artist.id}`)
+                api.get(`http://music.local/api/albums/created-by-artist/${this.artist.id}`)
                     .then( res => {
                         console.log(res.data);
-                        this.artist = res.data
+                        this.artistAlbums = res.data
                     })
             }
         }
@@ -56,5 +54,10 @@ import api from "../../api";
 </script>
 
 <style scoped>
-
+    .artist-box {
+        padding: 10px;
+        margin: 10px;
+        border: solid 1px gray;
+        border-radius: 10px;
+    }
 </style>

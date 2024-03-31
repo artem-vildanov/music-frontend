@@ -18,7 +18,7 @@
 
         computed: {
             imageSource() {
-                return `http://music.local:9006/photo${this.song.photo_path}`
+                return `http://music.local:9006/photo/${this.song.photo_path}`
             }
         }
 

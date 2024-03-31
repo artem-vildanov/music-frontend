@@ -11,7 +11,7 @@
 </template>
 
 <script>
-    import api from 'src/api.js'
+    import api from '@/api.js'
     export default {
         name: "App",
 
@@ -41,7 +41,7 @@
                 api.post('http://music.local/api/auth/logout', {})
                     .then( res => {
                         localStorage.removeItem('access_token')
-                        this.$router.push({name: 'user.login'})
+                        this.$router.push({name: 'auth.login'})
                     })
             }
         }

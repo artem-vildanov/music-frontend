@@ -1,3 +1,6 @@
+<script setup>
+import SingleSong from "@/components/audio/SingleSong.vue";
+</script>
 <template>
     <div class="album-box">
         <img :src="imageSource">
@@ -15,14 +18,10 @@
 
 <script>
     import api from "../../api";
-    import SingleSong from "../audio/SingleSong";
+    
 
     export default {
         name: "SingleAlbum",
-
-        components: [
-            SingleSong,
-        ],
 
         data() {
             return {
@@ -36,12 +35,12 @@
 
         computed: {
             imageSource() {
-                return `http://music.local:9006/photo${this.album.photo_path}`
+                return `http://music.local:9006/photo/${this.album.photo_path}`
             },
         },
 
         mounted() {
-
+            this.getAlbumSongs()
         },
 
         methods: {

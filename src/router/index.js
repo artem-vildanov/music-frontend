@@ -9,6 +9,8 @@ const router = createRouter({
       name: 'home',
       
     },
+    
+    // auth
     {
       path: '/login',
       name: 'auth.login',
@@ -23,6 +25,13 @@ const router = createRouter({
       path: '/personal',
       name: 'auth.personal',
       component: () => import('../components/auth/Personal.vue')
+    },
+
+    // artist
+    {
+      path: '/artists/all',
+      name: 'artist.all',
+      component: () => import('../components/artist/AllArtists.vue')
     },
   ]
 })
