@@ -1,10 +1,29 @@
 <template>
-    
+    <div>
+        All artist for test
+        <template v-for="">
+
+        </template>
+    </div>
 </template>
 
 <script>
     export default {
-        name: "AllArtists"
+        name: "AllArtists",
+
+        data() {
+            return {
+                artistsGroup: null,
+            }
+        },
+
+        mounted() {
+
+        },
+
+        methods: {
+
+        }
     }
 </script>
 
