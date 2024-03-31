@@ -5,7 +5,7 @@ import SingleAlbum from '../album/SingleAlbum.vue';
     <div class="artist-box">
         <img :src="imageSource">
         <div class="artist-box__artist-info">
-            <div>{{ this.artist.name }}</div>
+            <div>{{ artist.name }}</div>
         </div>
         <ul class="artist-box__artist-albums">
             <template v-for="album in artistAlbums">
@@ -36,7 +36,7 @@ import api from "../../api";
 
         computed: {
             imageSource() {
-                return `http://music.local:9006/photo/${this.artist.photo_path}`
+                return `http://music.local:9005/photo/${this.artist.photoPath}`
             }
         },
 
@@ -44,7 +44,6 @@ import api from "../../api";
             getArtistAlbums() {
                 api.get(`http://music.local/api/albums/created-by-artist/${this.artist.id}`)
                     .then( res => {
-                        console.log(res.data);
                         this.artistAlbums = res.data
                     })
             }

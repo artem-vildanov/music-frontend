@@ -35,7 +35,7 @@ import SingleSong from "@/components/audio/SingleSong.vue";
 
         computed: {
             imageSource() {
-                return `http://music.local:9006/photo/${this.album.photo_path}`
+                return `http://music.local:9005/photo/${this.album.photoPath}`
             },
         },
 
@@ -47,7 +47,6 @@ import SingleSong from "@/components/audio/SingleSong.vue";
             getAlbumSongs() {
                 api.get(`http://music.local/api/albums/${this.album.id}/songs/album-songs`)
                 .then( res => {
-                    console.log(res.data)
                     this.albumSongs = res.data
                 })
             }
