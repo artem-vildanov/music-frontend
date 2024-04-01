@@ -2,12 +2,14 @@
     width: 30px;
     height: 30px;
     border-radius: 10px;
+    pointer-events: none;
 }
 
 .big-photo {
-    width: 60px;
-    height: 60px;
-    border-radius: 20px;
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    pointer-events: none;
 }
 
 .main {
@@ -16,4 +18,11 @@
     /*flex-direction: column;*/
     /*justify-content: center;*/
     /*align-items: center;*/
+}
+
+.select-none {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Нормализация */
 }

@@ -2,7 +2,7 @@
 <!--import SingleSong from "@/components/audio/Song.vue";-->
 <!--</script>-->
 <template>
-    <div class="album-box">
+    <div class="album-container">
         <img :src="imageSource">
         <div class="album-box__album-info">
             <div>{{ album.name }}</div>

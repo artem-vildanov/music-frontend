@@ -1,19 +1,18 @@
-<script setup>
-import SingleArtist from './Artist.vue';
-</script>
 <template>
-    <div>
-        All artist for test
+    <div class="all-artists">
         <template v-for="artist in artistsGroup">
-            <SingleArtist :artist="artist"></SingleArtist>
+            <artist-card :artist="artist"></artist-card>
         </template>
     </div>
 </template>
 
 <script>
 import api from '../../api';
+import ArtistCard from '@/components/artist/ArtistCard.vue'
     export default {
         name: "AllArtists",
+
+        components: {ArtistCard},
 
         data() {
             return {
@@ -38,5 +37,16 @@ import api from '../../api';
 </script>
 
 <style scoped>
+.all-artists {
+    display: flex;
+    flex-direction: row;
+    row-gap: 0px;
+    column-gap: 0px;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    padding: 10px;
 
+    justify-content: flex-start;
+    align-items: flex-start;
+}
 </style>

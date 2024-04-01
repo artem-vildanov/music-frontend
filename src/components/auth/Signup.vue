@@ -1,6 +1,8 @@
 <template>
-    <div class="fs-large fw-bold m-4">
-        Signup
+    <div class="wrapper">
+        <div class="fs-large fw-bold m-4">
+            Signup
+        </div>
     </div>
 </template>
 
@@ -9,5 +11,7 @@
 </script>
 
 <style scoped>
+.wrapper {
 
+}
 </style>
