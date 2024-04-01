@@ -1,0 +1,19 @@
+.photo {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+}
+
+.big-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+}
+
+.main {
+    height: 100vh;
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
+}

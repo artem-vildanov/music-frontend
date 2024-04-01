@@ -1,6 +1,6 @@
 <template>
     <div class="song-box">
-        <img :src="imageSource">
+        <img class="photo" :src="imageSource">
         <div class="song-box__song-info">
             <div>{{ song.name }}</div>
             <div>{{ song.artistName }}</div>
@@ -10,7 +10,7 @@
 
 <script>
     export default {
-        name: "SingleSong",
+        name: "Song",
 
         props: [
             'song'
@@ -40,7 +40,4 @@
         color: #f4f8fd;
     }
 
-    .song-box__song-photo {
-
-    }
 </style>

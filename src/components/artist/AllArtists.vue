@@ -1,5 +1,5 @@
 <script setup>
-import SingleArtist from './SingleArtist.vue';
+import SingleArtist from './Artist.vue';
 </script>
 <template>
     <div>

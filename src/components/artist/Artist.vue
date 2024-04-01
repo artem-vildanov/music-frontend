@@ -1,15 +1,15 @@
-<script setup>
-import SingleAlbum from '../album/SingleAlbum.vue';
-</script>
+<!--<script setup>-->
+<!--import SingleAlbum from '../album/Album.vue';-->
+<!--</script>-->
 <template>
     <div class="artist-box">
-        <img :src="imageSource">
+        <img :src=`http://music.local:9005/photo/${artist.photoPath}`>
         <div class="artist-box__artist-info">
             <div>{{ artist.name }}</div>
         </div>
         <ul class="artist-box__artist-albums">
             <template v-for="album in artistAlbums">
-                <SingleAlbum :album="album"></SingleAlbum>
+                <album-card :album="album"></album-card>
             </template>
         </ul>
     </div>
@@ -17,9 +17,10 @@ import SingleAlbum from '../album/SingleAlbum.vue';
 
 <script>
 import api from "../../api";
+import AlbumCard from "../album/AlbumCard.vue";
     export default {
-        name: "SingleArtist",
-
+        name: "Artist",
+        components: {AlbumCard},
         data() {
             return {
                 artistAlbums: null,
@@ -35,8 +36,8 @@ import api from "../../api";
         },
 
         computed: {
-            imageSource() {
-                return `http://music.local:9005/photo/${this.artist.photoPath}`
+            photoSrc(object) {
+                return `http://music.local:9005/photo/${object.photoPath}`
             }
         },
 

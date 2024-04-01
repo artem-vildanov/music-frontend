@@ -1,6 +1,6 @@
-<script setup>
-import SingleSong from "@/components/audio/SingleSong.vue";
-</script>
+<!--<script setup>-->
+<!--import SingleSong from "@/components/audio/Song.vue";-->
+<!--</script>-->
 <template>
     <div class="album-box">
         <img :src="imageSource">
@@ -10,7 +10,7 @@ import SingleSong from "@/components/audio/SingleSong.vue";
         </div>
         <ul class="album-box__album-songs">
             <template v-for="song in albumSongs">
-                <SingleSong :song="song"></SingleSong>
+                <song :song="song"></song>
             </template>
         </ul>
     </div>
@@ -18,11 +18,12 @@ import SingleSong from "@/components/audio/SingleSong.vue";
 
 <script>
     import api from "../../api";
+    import Song from "../audio/Song.vue";
     
 
     export default {
         name: "SingleAlbum",
-
+        components: {Song},
         data() {
             return {
                 albumSongs: null,
