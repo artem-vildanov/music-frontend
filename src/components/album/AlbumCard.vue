@@ -1,11 +1,11 @@
 <template>
     <div class="album-card-container select-none">
 
-        <div class="album-photo" v-if="!imageError">
-            <img class="big-photo" :src="photoSrc" @error="setAltImg">
+        <div v-if="!imageError">
+            <img class="album-photo" :src="photoSrc" @error="setAltImg">
         </div>
-        <div class="album-photo" v-if="imageError">
-            <img class="big-photo" src='../../icons/base_img.png'>
+        <div v-if="imageError">
+            <img class="album-photo" src='../../icons/base_img.png'>
         </div>
 
         <div class="album-info">
@@ -58,13 +58,20 @@
         flex-direction: column;
         margin: 10px;
         padding: 15px;
-        width: fit-content;
-        height: fit-content;
+        /* width: fit-content;*/
+        height: fit-content; 
+
+        width: 28%;
 
         border: solid gray 1px;
         outline: 3px solid rgba(128, 128, 128, 0);
         border-radius: 10px;
         transition: all 0.5s ease-out;
+    }
+    
+    .album-photo {
+        width: 100%;
+        border-radius: 10px;
     }
 
     .album-info {
@@ -73,16 +80,26 @@
         justify-content: space-evenly;
         align-items: center;
         margin-top: 15px;
+
+        
     }
 
     .album-info__name {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
         font-size: 15px;
         font-weight: 300;
         color: rgb(70, 70, 70);
+        max-width: 100%;
 
         padding: 5px 10px;
         border-radius: 10px;
         outline: 4px solid rgb(124, 124, 124, 0);
+
+        
+
         transition:
             all 0.2s ease-out; 
             /* background-color 0.5s ease-out,

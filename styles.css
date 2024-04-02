@@ -12,12 +12,23 @@
     pointer-events: none;
 }
 
+.large-photo {
+    width: 250px;
+    height: 250px;
+    border-radius: 100%;
+    pointer-events: none; 
+}
+
+.circled {
+    border-radius: 100%;
+    text-align: center;
+}
+
 .main {
     height: 100vh;
-    /*display: flex;*/
-    /*flex-direction: column;*/
-    /*justify-content: center;*/
-    /*align-items: center;*/
+    width: 100%;
+    /* background-color: rgb(244, 245, 248); */
+    background-color: white;
 }
 
 .select-none {

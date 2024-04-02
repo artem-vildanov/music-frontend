@@ -18,10 +18,10 @@
             </a>
         </nav>
         
-        <div class="container">
-            <router-view class="container__content"></router-view>
-        </div>
-        <div class="container__audio-player"></div>
+        
+        <router-view class="container"></router-view>
+        
+        <div class="audio-player">Audio player</div>
     </div>
 </template>
 
@@ -65,31 +65,36 @@
 </script>
 
 <style scoped>
-
-
     .wrapper {
-        width: 100%;
-        height: 100%;
+        width:100%;
         display: flex;
         flex-direction: column;
     }
 
     .navbar {
-        width: 100%;
+        right: 20%;
+        left: 20%;
+        width: 60%;
         height: 80px;
+        border-radius: 0px 0px 20px 20px;
         display: flex;
-        position: static;
+        position: fixed;
         flex-direction: row;
         justify-content: start;
         align-items: center;
-        background-color: #121428;
+
+        border: gray 1px solid;
+        border-top: 0;
+
+        backdrop-filter: blur(10px);
+        /* background-color: #121428; */
     }
 
     .navbar__link {
-        color: white;
+        color: rgb(34, 34, 34);
         font-weight: bold;
         font-size: 20px;
-        margin: 5px 0px;
+        margin: 5px;
         padding: 5px 10px;
         transition: 
             background 0.5s ease-out,
@@ -101,8 +106,8 @@
 
     .navbar__link:hover {
         text-decoration: none;
-        background-color: #f4f8fd;
-        color: #121428;
+        background-color: rgb(34, 34, 34);
+        color: white;
     }
 
     .navbar__link:active {
@@ -110,31 +115,57 @@
     }
 
     .container {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        padding: 0;
+        
+        /* right: 20%;
+        left: 20%;
+        width: 60%;
+        height: 80%;
+        position: fixed;
+        border: gray solid 1px;
+        overflow-y: auto; */
+
+
+
+        margin-top: 100px;
+        margin-bottom: 60px;
+
+        width: 60%;
+        margin-left: auto;
+        margin-right: auto;
+
+        border-radius: 20px;
+
+        background-color: rgb(242, 243, 248);
+
+        
 
         /* justify-content: end; */
     }
 
     .container__content {
-        /* width: 100%;
-        height: 100%; */
-        /* display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        flex-grow: 0; */
+
     }
 
-    .container__audio-player {
+    /* .container__footer {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+    } */
+
+    .audio-player {
         position: fixed;
         bottom: 0px;
         /* bottom: 0; */
-        width: 100%;
+        left: 20%;
+        right: 20%;
+        width: 60%;
         height: 40px;
-        background-color: #121428;
+        background-color: #353855;
+
+        text-align: center;
+        padding: 5px;
+        color: white;
+        font-weight: bold;
+        border-radius: 20px 20px 0px 0px;
     }
 </style>

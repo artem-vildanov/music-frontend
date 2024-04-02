@@ -1,10 +1,10 @@
 <template>
     <div class="artist select-none">
         <div class="artist-photo" v-if="!imageError">
-            <img class="big-photo" :src="photoSrc" @error="setAltImg">
+            <img class="artist-photo circled" :src="photoSrc" @error="setAltImg">
         </div>
         <div class="artist-photo" v-if="imageError">
-            <img class="big-photo" src='../../icons/base_img.png'>
+            <img class="artist-photo circled" src='../../icons/base_img.png'>
         </div>
         <div class="artist-info">
             <div @click.prevent="openArtist()" class="artist-info__name">
@@ -66,9 +66,9 @@ import router from '@/router'
         
         display: flex;
         flex-direction: column;
-        margin: 10px;
+        margin: 15px;
         padding: 15px;
-        width: fit-content;
+        width: 20%;
         height: fit-content;
 
         border: solid gray 1px;
@@ -76,6 +76,8 @@ import router from '@/router'
         /* box-shadow: 0 0 0 7px rgba(128, 128, 128, 0);*/
 
         border-radius: 10px;
+
+
 
         transition: 
             all 0.5s ease-out;
@@ -91,9 +93,13 @@ import router from '@/router'
         box-shadow: 0 0 0 10px rgba(128, 128, 128, 0.25);
     } */
 
+    .artist-photo {
+        width: 100%;
+    }
+
     .artist-info {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
         margin-top: 15px;

@@ -2,51 +2,37 @@
     <div class="artist-container" v-if="artist">
         <div class="dashboard"><!-- display flex flex-dir: row-->
             <div class="photo-container"><!-- photo styles -->
-                <div class="artist-photo" v-if="!imageError">
-                    <img class="big-photo" :src="photoSrc" @error="setAltImg">
-                </div>
-                <div class="artist-photo" v-if="imageError">
-                    <img class="big-photo" src='../../icons/base_img.png'>
-                </div>
+                <template v-if="!imageError">
+                    <img class="artist-photo" :src="photoSrc" @error="setAltImg">
+                </template>
+                <template v-if="imageError">
+                    <img class="artist-photo" src='../../icons/base_img.png'>
+                </template>
             </div>
             <div class="info-container"><!-- dis: flex; flex-dir: column; -->
                 <div class="info-container__artist-name">
                     {{ artist.name }}
                 </div>
-                <div class="info-container__is-favourite">
-                    <template v-if="artist.isFavourite">
+                <div class="info-container__actions-container">
+                    <div class="actions-container__is-favourite" v-if="artist.isFavourite">
                         <img class="icon" src="../../icons/liked.svg">
-                    </template>
-                    <template v-if="!artist.isFavourite">
+                    </div>
+                    <div class="actions-container__is-favourite" v-if="!artist.isFavourite">
                         <img class="icon" src="../../icons/not_liked.svg">
-                    </template>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div class="music-content">
+            <h2 class="mx-2">Альбомы</h2>
+            <div class="albums">       
+                <template v-for="album in artistAlbums">
+                    <album-card :album="album"></album-card>
+                </template>
             </div>
+            <!-- <h2>Треки</h2> -->
         </div>
-        <hr>
-        <h2>Альбомы</h2>
-        <div class="albums">       
-            <template v-for="album in artistAlbums">
-                <album-card :album="album"></album-card>
-            </template>
-        </div>
-<!--
-        <div class="artist-photo" v-if="!imageError">
-            <img class="big-photo" :src="photoSrc" @error="setAltImg">
-        </div>
-        <div class="artist-photo" v-if="imageError">
-            <img class="big-photo" src='../../icons/base_img.png'>
-        </div>
-
-        <div class="artist-box__artist-info">
-            <div>{{ artist.name }}</div>
-        </div>
-        <ul class="artist-box__artist-albums">
-            <template v-for="album in artistAlbums">
-                <album-card :album="album"></album-card>
-            </template>
-        </ul>
--->
+        
     </div>
 </template>
 
@@ -109,37 +95,61 @@ import AlbumCard from "../album/AlbumCard.vue";
 
 <style scoped>
     .artist-container {
-        margin: 20px;
+        /* margin: 20px; */
+        padding: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
     }
 
     .dashboard {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
+        align-items: center;
+        width: 30%;
+        background-color: white;
+        border-radius: 20px;
+        padding: 20px;
+    }
+
+    .artist-photo {
+        width: 100%;
+        border-radius: 100%;
+    }
+
+    .music-content {
+        width: 67%;
+        /* border: 2px solid black; */
+        padding: 20px;
+        background-color: white;
+        border-radius: 20px;
     }
 
     .albums {
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
+        /* justify-content: space-between; */
     }
 
     .photo-container {
-        margin-right: 30px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        
     }
 
     .info-container {
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
 
     .info-container__artist-name {
-        font-size: 60px;
+        font-size: 30px;
     }
 
 
-    .info-container__is-favourite {
+    .actions-container__is-favourite {
         border-radius: 50%;
         display: flex;
         width: fit-content;
@@ -149,17 +159,17 @@ import AlbumCard from "../album/AlbumCard.vue";
         transition: all 0.2s ease-out;
     }
 
-    .info-container__is-favourite:hover {
+    .actions-container__is-favourite:hover {
         background-color: rgb(128, 128, 128, 0.25);
     }
 
-    .info-container__is-favourite:active {
+    .actions-container__is-favourite:active {
         background-color: gray;
     }
 
     .icon {
-        width: 60px;
-        height: 60px;
+        width: 30px;
+        height: 30px;
     }
 
 </style>

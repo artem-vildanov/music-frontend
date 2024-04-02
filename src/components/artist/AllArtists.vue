@@ -43,10 +43,9 @@ import ArtistCard from '@/components/artist/ArtistCard.vue'
     row-gap: 0px;
     column-gap: 0px;
     flex-wrap: wrap;
-    overflow-x: auto;
     padding: 10px;
 
-    justify-content: flex-start;
-    align-items: flex-start;
+    /* justify-content: space-between; */
+    justify-content: center;
 }
 </style>
