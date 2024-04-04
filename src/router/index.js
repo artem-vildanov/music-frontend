@@ -39,12 +39,12 @@ const router = createRouter({
       component: () => import('../components/artist/Artist.vue'),
     },
 
-    // // album
-    // {
-    //   path: '/album/:id',
-    //   name: 'album.single',
-    //   component: () => import('../components/album/Album.vue')
-    // },
+    // album
+    {
+      path: '/album/:id',
+      name: 'album.single',
+      component: () => import('../components/album/Album.vue')
+    },
   ]
 })
 

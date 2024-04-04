@@ -2,23 +2,17 @@
     <div class="artist-container" v-if="artist">
         <div class="dashboard"><!-- display flex flex-dir: row-->
             <div class="photo-container"><!-- photo styles -->
-                <template v-if="!imageError">
-                    <img class="artist-photo select-none" :src="photoSrc" @error="setAltImg">
-                </template>
-                <template v-if="imageError">
-                    <img class="artist-photo select-none" src='../../icons/base_img.png'>
-                </template>
+                <img v-show="!imageError" class="artist-photo select-none" :src="photoSrc" @error="imageError = true">
+                <img v-show="imageError" class="artist-photo select-none" :src="altPhotoSrc">
             </div>
             <div class="info-container"><!-- dis: flex; flex-dir: column; -->
                 <div class="info-container__artist-name">
                     {{ artist.name }}
                 </div>
                 <div class="info-container__actions-container">
-                    <div class="actions-container__is-favourite" v-if="artist.isFavourite">
-                        <img class="icon select-none" src="../../icons/liked.svg">
-                    </div>
-                    <div class="actions-container__is-favourite" v-if="!artist.isFavourite">
-                        <img class="icon select-none" src="../../icons/not_liked.svg">
+                    <div class="actions-container__is-favourite">
+                        <img v-show="artist.isFavourite" class="icon select-none" src="../../icons/liked.svg">
+                        <img v-show="!artist.isFavourite" class="icon select-none" src="../../icons/not_liked.svg">
                     </div>
                 </div>
             </div>
@@ -45,7 +39,7 @@ import AlbumCard from "../album/AlbumCard.vue";
                 artist: null,
                 artistAlbums: null,
                 imageError: false,
-                altPhotoSrc: '../../icons/base_img.png'
+                altPhotoSrc: "/src/icons/base_img.jpg"
             }
         },
 

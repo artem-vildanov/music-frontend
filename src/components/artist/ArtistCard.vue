@@ -8,7 +8,7 @@
                 </div>
             </div>
             <img class="artist-photo-container__photo" v-show="!imageError" :src="photoSrc" @error="this.imageError = true">
-            <img class="artist-photo-container__photo" v-show="imageError" src='../../icons/base_img.jpg'>
+            <img class="artist-photo-container__photo" v-show="imageError" :src="altPhotoSrc">
         </div>
         <div class="artist-info">
             <div @click.prevent="openArtist()" class="artist-info__name">
@@ -33,35 +33,15 @@ import router from '@/router'
             return {
                 imageError: false,
                 photoSrc: `http://music.local:9005/photo/${this.artist.photoPath}`,
+                altPhotoSrc: "/src/icons/base_img.jpg"
             }
         },
 
         mounted() {
-            // this.checkPhotoUrl(this.photoSrc)
-            // .then( res => {
-            //     if (res) {
-            //         this.setArtistPhoto()
-            //     }
-            // })
-            
+
         },
 
         methods: {
-            // setArtistPhoto() {
-            //     const artistPhoto = document.getElementById(`photo_${this.artist.id}`)
-            //     artistPhoto.style.backgroundImage = `url(${this.photoSrc})`
-            // },
-
-            // async checkPhotoUrl(url) {
-            //     const response = await fetch(url, { method: 'HEAD' })
-            //     if (response.status === 404) {
-            //         console.log('error 404')
-            //         return false
-            //     }
-
-            //     return true
-            // },
-
             openArtist() {
                 router.push({name: 'artist.single', params: {id: this.artist.id}})
             }   
@@ -101,7 +81,7 @@ import router from '@/router'
     .artist-photo-container__photo {
         width: 150px;
         height: 150px;
-        border-radius: 10px;
+        border-radius: 50%;
         overflow: hidden;
         pointer-events: none;
     }
@@ -112,7 +92,7 @@ import router from '@/router'
         height: 100%;
         z-index: 1;
         background-color: rgba(255, 255, 255, 0); 
-        border-radius: 10px;
+        border-radius: 50%;
         transition: 0.5s ease-out;
 
         display: flex;

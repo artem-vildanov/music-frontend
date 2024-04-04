@@ -9,7 +9,7 @@
                 </div>
             </div>
             <img class="album-photo-container__photo" v-show="!imageError" :src="photoSrc" @error="this.imageError = true">
-            <img class="album-photo-container__photo" v-show="imageError" src='../../icons/base_img.jpg'>
+            <img class="album-photo-container__photo" v-show="imageError" :src="altPhotoSrc">
         </div>
 
         <div class="album-info">
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import router from '@/router';
     export default {
         name: "AlbumCard",
 
@@ -28,13 +29,19 @@
             return {
                 imageError: null,
                 photoSrc: `http://music.local:9005/photo/${this.album.photoPath}`,
-                altPhotoSrc: '../../icons/base_img.png'
+                altPhotoSrc: "/src/icons/base_img.jpg"
             }
         },
 
         props: [
             'album'
         ],
+
+        methods: {
+            openAlbum() {
+                router.push({name: 'album.single', params: {id: this.album.id}})
+            }
+        }
     }
 </script>
 
