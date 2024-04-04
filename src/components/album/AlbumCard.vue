@@ -63,7 +63,7 @@ import router from '@/router';
     }
 
     .album-card-container:hover {
-        outline: 6px solid rgba(128, 128, 128, 0.5);
+        background-color: rgba(125, 125, 125, 0.1);
     }
 
     .album-photo-container {
@@ -89,6 +89,7 @@ import router from '@/router';
         z-index: 1;
         background-color: rgba(255, 255, 255, 0); 
         transition: 0.5s ease-out;
+        border-radius: 10px;
 
         display: flex;
         justify-content: center;

@@ -60,13 +60,12 @@ import router from '@/router'
         height: fit-content; 
 
         border: solid gray 1px;
-        outline: 6px solid rgba(128, 128, 128, 0);
         border-radius: 10px;
         transition: all 0.5s ease-out;
     }
 
     .artist-card-container:hover {
-        outline: 6px solid rgba(128, 128, 128, 0.5);
+        background-color: rgba(125, 125, 125, 0.1);
     }
 
     .artist-photo-container {

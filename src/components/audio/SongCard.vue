@@ -71,7 +71,7 @@
     }
 
     .song-card:hover {
-        background-color: rgba(125, 125, 125, 0.1);
+        background-color: rgba(125, 125, 125, 0.2);
     }
 
     .song-card:hover .photo-container__photo-overlay {
@@ -106,6 +106,7 @@
         z-index: 1;
         background-color: rgba(255, 255, 255, 0); 
         transition: 0.5s ease-out;
+        border-radius: 5px;
 
         display: flex;
         justify-content: center;
