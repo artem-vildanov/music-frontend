@@ -91,13 +91,14 @@ import AlbumCard from "../album/AlbumCard.vue";
         display: flex;
         flex-direction: row;
         gap: 20px;
+        width: fit-content;
     }
 
     .dashboard {
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: fit-content;
+        width: 300px;
         background-color: white;
         border-radius: 20px;
         padding: 20px;
@@ -111,7 +112,7 @@ import AlbumCard from "../album/AlbumCard.vue";
     }
 
     .artist-content {
-        width: 67%;
+        width: 500px;
         /* border: 2px solid black; */
 
         /* padding: 20px;
@@ -120,6 +121,7 @@ import AlbumCard from "../album/AlbumCard.vue";
     }
 
     .albums {
+        width: inherit;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
