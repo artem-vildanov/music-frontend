@@ -67,11 +67,14 @@
 <style scoped>
     .wrapper {
         width:100%;
+        /* height: 100%; */
         display: flex;
         flex-direction: column;
     }
 
     .navbar {
+        z-index: 10;
+
         right: 20%;
         left: 20%;
         width: 60%;
@@ -129,7 +132,7 @@
         margin-top: 100px;
         margin-bottom: 60px;
 
-        width: 60%;
+        width: 80%;
         margin-left: auto;
         margin-right: auto;
 

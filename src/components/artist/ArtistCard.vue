@@ -1,31 +1,20 @@
 <template>
-    <div class="artist select-none">
-        <div class="artist-photo" v-if="!imageError">
-            <img class="artist-photo circled" :src="photoSrc" @error="setAltImg">
-        </div>
-        <div class="artist-photo" v-if="imageError">
-            <img class="artist-photo circled" src='../../icons/base_img.png'>
+    <div class="artist-card-container select-none">
+        <div class="artist-photo-container">
+            <div class="artist-photo-container__photo-overlay">
+                <div class="photo-overlay__is-favourite">
+                    <img v-show="artist.isFavourite" class="icon" src="../../icons/liked.svg">
+                    <img v-show="!artist.isFavourite" class="icon" src="../../icons/not_liked.svg">
+                </div>
+            </div>
+            <img class="artist-photo-container__photo" v-show="!imageError" :src="photoSrc" @error="this.imageError = true">
+            <img class="artist-photo-container__photo" v-show="imageError" src='../../icons/base_img.jpg'>
         </div>
         <div class="artist-info">
             <div @click.prevent="openArtist()" class="artist-info__name">
                 {{ artist.name }}
             </div>
-            <!-- <router-link :to="{ name: 'artist.single', params: { id: artist.id, artist: artist}}" class="artist-info__name">
-                {{ artist.name }}
-            </router-link> -->
-            <div class="artist-info__is-favourite">
-                <template v-if="artist.isFavourite">
-                    <img class="icon" src="../../icons/liked.svg">
-                </template>
-                <template v-if="!artist.isFavourite">
-                    <img class="icon" src="../../icons/not_liked.svg">
-                </template>
-            </div>
         </div>
-        
-        <!-- <div class="artist-info__playlists">
-            <img class="icon" src="../../icons/playlist.svg">
-        </div> -->
     </div>
 </template>
 
@@ -44,17 +33,36 @@ import router from '@/router'
             return {
                 imageError: false,
                 photoSrc: `http://music.local:9005/photo/${this.artist.photoPath}`,
-                altPhotoSrc: '../../icons/base_img.png'
             }
         },
 
+        mounted() {
+            // this.checkPhotoUrl(this.photoSrc)
+            // .then( res => {
+            //     if (res) {
+            //         this.setArtistPhoto()
+            //     }
+            // })
+            
+        },
+
         methods: {
-            setAltImg() {  
-                this.imageError = true
-            },
+            // setArtistPhoto() {
+            //     const artistPhoto = document.getElementById(`photo_${this.artist.id}`)
+            //     artistPhoto.style.backgroundImage = `url(${this.photoSrc})`
+            // },
+
+            // async checkPhotoUrl(url) {
+            //     const response = await fetch(url, { method: 'HEAD' })
+            //     if (response.status === 404) {
+            //         console.log('error 404')
+            //         return false
+            //     }
+
+            //     return true
+            // },
 
             openArtist() {
-                console.log()
                 router.push({name: 'artist.single', params: {id: this.artist.id}})
             }   
         }
@@ -62,66 +70,86 @@ import router from '@/router'
 </script>
 
 <style scoped>
-    .artist {
-        
+    .artist-card-container {
         display: flex;
         flex-direction: column;
-        margin: 15px;
+        margin: 10px;
         padding: 15px;
-        width: 20%;
-        height: fit-content;
+
+        width: fit-content;
+        height: fit-content; 
 
         border: solid gray 1px;
-        outline: 3px solid rgba(128, 128, 128, 0);
-        /* box-shadow: 0 0 0 7px rgba(128, 128, 128, 0);*/
-
+        outline: 6px solid rgba(128, 128, 128, 0);
         border-radius: 10px;
-
-
-
-        transition: 
-            all 0.5s ease-out;
-            /* box-shadow 0.1s ease-out; */
-            
+        transition: all 0.5s ease-out;
     }
 
-    /* .artist:hover {
-        outline: 3px solid rgba(128, 128, 128, 0.5);
-    } */
+    .artist-card-container:hover {
+        outline: 6px solid rgba(128, 128, 128, 0.5);
+    }
 
-    /* .artist:active {
-        box-shadow: 0 0 0 10px rgba(128, 128, 128, 0.25);
-    } */
-
-    .artist-photo {
+    .artist-photo-container {
         width: 100%;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
     }
+    
+    .artist-photo-container__photo {
+        width: 150px;
+        height: 150px;
+        border-radius: 10px;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .artist-photo-container__photo-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        background-color: rgba(255, 255, 255, 0); 
+        border-radius: 10px;
+        transition: 0.5s ease-out;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .artist-card-container:hover .artist-photo-container__photo-overlay {
+        background-color: rgba(255, 255, 255, 0.7); 
+    } 
 
     .artist-info {
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
-        margin-top: 15px;
+        margin-top: 15px;   
     }
 
     .artist-info__name {
-        font-size: 20px;
-        font-weight: 500;
-        color: rgb(70, 70, 70);
+        max-width: 150px;
 
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 15px;
+        font-weight: 300;
+        color: rgb(70, 70, 70);
+        
         padding: 5px 10px;
         border-radius: 10px;
         outline: 4px solid rgb(124, 124, 124, 0);
-        transition:
-            all 0.2s ease-out; 
-            /* background-color 0.5s ease-out,
-            color 0.1s ease-out,
-            outline 0.1s ease-out; */
+        transition: all 0.2s ease-out; 
     }
 
     .artist-info__name:hover {
-        /* background-color: rgb(124, 124, 124, 0.25); */
+        background-color: rgb(124, 124, 124, 0.1); 
         color: black;      
         text-decoration: none;  
     }
@@ -131,7 +159,11 @@ import router from '@/router'
         /* outline: 4px solid rgb(124, 124, 124, 0.25); */
     }
 
-    .artist-info__is-favourite {
+    .photo-overlay__is-favourite {
+        position: absolute;
+        z-index: 2;
+        opacity: 0;
+
         border-radius: 50%;
         display: flex;
         justify-content: center;
@@ -140,11 +172,15 @@ import router from '@/router'
         transition: all 0.2s ease-out;
     }
 
-    .artist-info__is-favourite:hover {
+    .artist-card-container:hover .photo-overlay__is-favourite {
+        opacity: 1;
+    } 
+
+    .photo-overlay__is-favourite:hover {
         background-color: rgb(128, 128, 128, 0.25);
     }
 
-    .artist-info__is-favourite:active {
+    .photo-overlay__is-favourite:active {
         background-color: gray;
     }
 
@@ -152,6 +188,5 @@ import router from '@/router'
         width: 30px;
         height: 30px;
     }
-
 
 </style>
