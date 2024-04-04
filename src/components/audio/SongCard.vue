@@ -116,7 +116,7 @@
     .photo-overlay__play-audio {
         padding: 5px;
         opacity: 0;
-        transition: all 0.5s ease-out;
+        transition: all 0.2s ease-out;
         background-color: rgba(125, 125, 125, 0);
         border-radius: 50%;
     }
@@ -149,7 +149,19 @@
     }
 
     .info-container__artist-name {
-        font-size: 10px;
+        font-size: 12px;
+        padding: 2.5px 5px;
+        width: fit-content;
+        border-radius: 5px;
+        transition: all 0.2s ease-out;
+    }
+
+    .info-container__artist-name:hover {
+        background-color: rgba(125, 125, 125, 0.5);
+    }
+
+    .info-container__artist-name:active {
+        background-color: rgba(125, 125, 125, 1);
     }
 
     .actions-container {
@@ -164,7 +176,7 @@
     .actions-container__is-favourite {
         margin: 0px 2px;
         border-radius: 50%;
-        transition: all 0.5s ease-out;
+        transition: all 0.2s ease-out;
         padding: 5px;
     }
 
@@ -179,7 +191,7 @@
     .actions-container__add-to-playlist {
         margin: 0px 2px;
         border-radius: 50%;
-        transition: all 0.5s ease-out;
+        transition: all 0.2s ease-out;
         padding: 2px;
     }
 

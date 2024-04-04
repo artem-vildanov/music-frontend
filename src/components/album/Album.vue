@@ -9,6 +9,9 @@
                 <div class="info-container__album-name">
                     {{ album.name }}
                 </div>
+                <div class="info-container__artist-name">
+                    {{ album.artistName }}
+                </div>
                 <div class="info-container__actions-container">
                     <div class="actions-container__is-favourite">
                         <img v-show="album.isFavourite" class="icon select-none" src="../../icons/liked.svg">
@@ -142,9 +145,26 @@
 
     .info-container__album-name {
         font-size: 20px;
-        margin: 10px;
+        margin-top: 10px;
     }
 
+    .info-container__artist-name {
+        font-size: 15px;
+        padding: 5px 10px;
+        margin-bottom: 5px;
+        border-radius: 10px;
+        color: rgb(70, 70, 70);
+        transition: all 0.2s ease-out;
+    }
+
+    .info-container__artist-name:hover {
+        background-color: rgba(125, 125, 125, 0.4);
+        color: black;
+    }
+
+    .info-container__artist-name:active {
+        background-color: rgba(125, 125, 125, 1);
+    }
 
     .actions-container__is-favourite {
         border-radius: 50%;

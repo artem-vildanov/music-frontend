@@ -13,7 +13,7 @@
             <router-link class="navbar__link" v-show="accessToken" :to="{ name: 'artist.all' }">
                 All artists 
             </router-link>
-            <a class="navbar__link" @click.prevent="logout" href="#" v-show="accessToken">
+            <a class="navbar__link navbar__logout" @click.prevent="logout" href="#" v-show="accessToken">
                 Logout
             </a>
         </nav>
@@ -117,6 +117,16 @@
         opacity: 50%;
     }
 
+    .navbar__logout {
+        margin-left: auto;
+        color: rgb(197, 26, 55);
+    }
+
+    .navbar__logout:hover {
+        background-color: rgb(197, 26, 55);
+        color: white;
+    }
+
     .container {
         
         /* right: 20%;
@@ -138,7 +148,7 @@
 
         border-radius: 20px;
 
-        background-color: rgb(242, 243, 248);
+        background-color: rgba(125, 125, 125, 0.2);
 
         
 

@@ -65,7 +65,7 @@ import router from '@/router'
     }
 
     .artist-card-container:hover {
-        background-color: rgba(125, 125, 125, 0.1);
+        background-color: rgba(125, 125, 125, 0.2);
     }
 
     .artist-photo-container {
@@ -128,7 +128,7 @@ import router from '@/router'
     }
 
     .artist-info__name:hover {
-        background-color: rgb(124, 124, 124, 0.1); 
+        background-color: rgb(124, 124, 124, 0.2); 
         color: black;      
         text-decoration: none;  
     }

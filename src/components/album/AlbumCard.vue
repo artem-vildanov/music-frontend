@@ -63,7 +63,7 @@ import router from '@/router';
     }
 
     .album-card-container:hover {
-        background-color: rgba(125, 125, 125, 0.1);
+        background-color: rgba(125, 125, 125, 0.2);
     }
 
     .album-photo-container {
@@ -75,8 +75,8 @@ import router from '@/router';
     }
     
     .album-photo-container__photo {
-        width: 100px;
-        height: 100px;
+        width: 150px;
+        height: 150px;
         border-radius: 10px;
         overflow: hidden;
         pointer-events: none;
@@ -109,12 +109,12 @@ import router from '@/router';
     }
 
     .album-info__name {
-        max-width: 100px;
+        max-width: 150px;
 
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        font-size: 10px;
+        font-size: 15px;
         font-weight: 200;
         color: rgb(70, 70, 70);
         
@@ -125,7 +125,7 @@ import router from '@/router';
     }
 
     .album-info__name:hover {
-        background-color: rgb(124, 124, 124, 0.1); 
+        background-color: rgb(124, 124, 124, 0.2); 
         color: black;      
         text-decoration: none;  
     }

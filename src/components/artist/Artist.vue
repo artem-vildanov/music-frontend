@@ -99,6 +99,7 @@ import AlbumCard from "../album/AlbumCard.vue";
         flex-direction: column;
         align-items: center;
         width: 300px;
+        height: fit-content;
         background-color: white;
         border-radius: 20px;
         padding: 20px;
