@@ -100,7 +100,7 @@ import AlbumCard from "../album/AlbumCard.vue";
         align-items: center;
         width: 300px;
         height: fit-content;
-        background-color: white;
+        background-color: rgba(125, 125, 125, 0.1);
         border-radius: 20px;
         padding: 20px;
     }
@@ -113,7 +113,7 @@ import AlbumCard from "../album/AlbumCard.vue";
     }
 
     .artist-content {
-        width: 500px;
+        width: 450px;
         /* border: 2px solid black; */
 
         /* padding: 20px;
@@ -127,9 +127,8 @@ import AlbumCard from "../album/AlbumCard.vue";
         flex-wrap: wrap;
         justify-content: center;
         padding: 20px;
-        background-color: white;
+        background-color: rgba(125, 125, 125, 0.1);
         border-radius: 20px;
-        /* justify-content: space-between; */
     }
 
     .photo-container {

@@ -46,42 +46,43 @@ const router = createRouter({
       component: () => import('../components/album/Album.vue')
     },
 
-// TODO make components!
-/**
-    // user
-    {
-      path: '/profile',
-      name: 'user.profile',
-      component: () => import('')
-    },
 
-    // favourites
+    // favourite
     {
-      path: '/favourites/songs',
-      name: 'favourites.songs',
-      component: () => import('')
+      path: '/favourite',
+      name: 'favourite.collection',
+      component: () => import('../components/favourite/Collection.vue')
     },
 
     {
-      path: '/favourites/albums',
-      name: 'favourites.albums',
-      component: () => import('')
+      path: '/favourite/songs',
+      name: 'favourite.songs',
+      component: () => import('../components/favourite/FavouriteSongs.vue')
     },
 
     {
-      path: '/favourites/artists',
-      name: 'favourites.artists',
-      component: () => import('')
+      path: '/favourite/albums',
+      name: 'favourite.albums',
+      component: () => import('../components/favourite/FavouriteAlbums.vue')
+    },
+
+    {
+      path: '/favourite/artists',
+      name: 'favourite.artists',
+      component: () => import('../components/favourite/FavouriteArtists.vue')
     },
 
     // playlist
     {
+      path: '/playlists',
+      name: 'playlist.all',
+      component: () => import('../components/playlist/AllPlaylists.vue')
+    },
+    {
       path: '/playlists/:id',
-      name: 'playlist'
-    }
- */    
-    
-    
+      name: 'playlist.single',
+      component: () => import('../components/playlist/Playlist.vue')
+    },
   ]
 })
 

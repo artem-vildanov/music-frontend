@@ -41,13 +41,9 @@ import ArtistCard from '@/components/artist/ArtistCard.vue'
 <style scoped>
 .all-artists {
     display: flex;
-    /* flex-direction: row; */
     flex-wrap: wrap;
     padding: 10px;
-
-    /* justify-content: space-between; */
     justify-content: center;
-
     width: 100%;
     height: 100%;
 }

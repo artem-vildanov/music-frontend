@@ -124,11 +124,10 @@
         flex-direction: column;
         justify-content: center;
         padding: 15px 20px;
-        background-color: white;
+        background-color:rgba(125, 125, 125, 0.1);
         border-radius: 20px;
 
         width: 400px;
-        /* justify-content: space-between; */
     }
 
     .photo-container {
@@ -150,7 +149,7 @@
 
     .info-container__artist-name {
         font-size: 15px;
-        padding: 5px 10px;
+        padding: 2.5px 7px;
         margin-bottom: 5px;
         border-radius: 10px;
         color: rgb(70, 70, 70);

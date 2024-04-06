@@ -59,7 +59,7 @@ import router from '@/router'
         width: fit-content;
         height: fit-content; 
 
-        border: solid gray 1px;
+        border: solid rgba(125, 125, 125, 0.5) 1px;
         border-radius: 10px;
         transition: all 0.5s ease-out;
     }

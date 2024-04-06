@@ -2,19 +2,22 @@
     <div class="wrapper">
         <nav class="navbar">
             <router-link class="navbar__link" v-show="!accessToken" :to="{ name: 'auth.login' }">
-                Login
+                Войти
             </router-link>
             <router-link class="navbar__link" v-show="!accessToken" :to="{ name: 'auth.signup' }">
-                SignUp
+                Регистрация
             </router-link>
             <router-link class="navbar__link" v-show="accessToken" :to="{ name: 'auth.personal' }">
-                Personal
+                Профиль
             </router-link>
             <router-link class="navbar__link" v-show="accessToken" :to="{ name: 'artist.all' }">
                 All artists 
             </router-link>
+            <router-link class="navbar__link" v-show="accessToken" :to="{ name: 'favourite.collection' }">
+                Коллекция
+            </router-link>
             <a class="navbar__link navbar__logout" @click.prevent="logout" href="#" v-show="accessToken">
-                Logout
+                Выйти
             </a>
         </nav>
         
@@ -85,17 +88,15 @@
         flex-direction: row;
         justify-content: start;
         align-items: center;
-
-        border: gray 1px solid;
         border-top: 0;
 
+        background-color: rgba(125, 125, 125, 0.1);
         backdrop-filter: blur(10px);
         /* background-color: #121428; */
     }
 
     .navbar__link {
-        color: rgb(34, 34, 34);
-        font-weight: bold;
+        color: rgba(1, 1, 1, 0.7);
         font-size: 20px;
         margin: 5px;
         padding: 5px 10px;
@@ -109,8 +110,8 @@
 
     .navbar__link:hover {
         text-decoration: none;
-        background-color: rgb(34, 34, 34);
-        color: white;
+        background-color: rgb(125, 125, 125, 0.2);
+        color: rgba(1, 1, 1, 1);
     }
 
     .navbar__link:active {
@@ -128,29 +129,18 @@
     }
 
     .container {
-        
-        /* right: 20%;
-        left: 20%;
-        width: 60%;
-        height: 80%;
-        position: fixed;
-        border: gray solid 1px;
-        overflow-y: auto; */
-
-
-
         margin-top: 100px;
         margin-bottom: 60px;
 
-        width: 80%;
+        /* width: 80%; */
+        width: fit-content;
+
         margin-left: auto;
         margin-right: auto;
 
         border-radius: 20px;
-
-        background-color: rgba(125, 125, 125, 0.2);
-
-        
+        /* border: solid 1px rgba(125, 125, 125, 0.5); */
+        background-color: rgba(125, 125, 125, 0.1);
 
         /* justify-content: end; */
     }

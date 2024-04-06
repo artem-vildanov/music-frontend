@@ -13,7 +13,7 @@
         </div>
 
         <div class="album-info">
-            <div @click.prevent="openAlbum()" class="album-info__name">
+            <div :title="album.name" @click.prevent="openAlbum()" class="album-info__name">
                 {{ album.name }}
             </div>
         </div>
@@ -56,8 +56,7 @@ import router from '@/router';
 
         /* width: 28%; */
 
-        border: solid gray 1px;
-        outline: 6px solid rgba(128, 128, 128, 0);
+        border: solid rgba(125, 125, 125, 0.5) 1px;
         border-radius: 10px;
         transition: all 0.5s ease-out;
     }
