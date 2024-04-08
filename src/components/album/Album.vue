@@ -9,9 +9,9 @@
                 <div class="info-container__album-name">
                     {{ album.name }}
                 </div>
-                <div class="info-container__artist-name">
+                <router-link :to="{ name: 'artist.single', params: { id: album.artistId }}" class="info-container__artist-name">
                     {{ album.artistName }}
-                </div>
+                </router-link>
                 <div class="info-container__actions-container">
                     <div class="actions-container__is-favourite">
                         <img v-show="album.isFavourite" class="icon select-none" src="../../icons/liked.svg">
@@ -157,6 +157,7 @@
     }
 
     .info-container__artist-name:hover {
+        text-decoration: none;
         background-color: rgba(125, 125, 125, 0.4);
         color: black;
     }

@@ -17,9 +17,9 @@
             <div :title="song.name" class="song-info-container__name">
                 {{ song.name }}
             </div>
-            <div class="song-info-container__artist-name">
+            <router-link :to="{ name: 'artist.single', params: { id: song.artistId }}" class="song-info-container__artist-name">
                 {{ song.artistName }}
-            </div>
+            </router-link>
         </div>
 
         <div class="song-actions-container">
@@ -200,6 +200,7 @@ import api from "@/api"
     }
 
     .song-info-container__artist-name:hover {
+        text-decoration: none;
         background-color: rgba(125, 125, 125, 0.5);
         color: black;
     }
