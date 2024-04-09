@@ -1,27 +1,25 @@
 <template>
-    <div class="artist-card-container select-none">
+    <div class="artist-card select-none" :id="`artist_${this.artist.id}`">
         <div class="artist-photo-container">
             <div class="artist-photo-container__photo-overlay">
                 <div class="photo-overlay__is-favourite">
-                    <img v-show="artist.isFavourite" class="icon" src="../../icons/liked.svg">
-                    <img v-show="!artist.isFavourite" class="icon" src="../../icons/not_liked.svg">
+                    <img @click.prevent="removeFromFavourites()" v-show="artist.isFavourite" class="icon" src="../../icons/liked.svg">
+                    <img @click.prevent="addToFavourites()" v-show="!artist.isFavourite" class="icon" src="../../icons/not_liked.svg">
                 </div>
             </div>
             <img class="artist-photo-container__photo" v-show="!imageError" :src="photoSrc" @error="this.imageError = true">
             <img class="artist-photo-container__photo" v-show="imageError" :src="altPhotoSrc">
         </div>
         <div class="artist-info">
-            <div @click.prevent="openArtist()" class="artist-info__name">
+            <router-link :to="{ name: 'artist.single', params: { id: artist.id }}" class="artist-info__name">
                 {{ artist.name }}
-            </div>
+            </router-link>
         </div>
     </div>
 </template>
 
 <script>
-
-import router from '@/router'
-
+import api from '@/api'
     export default {
         name: "ArtistCard",
 
@@ -42,15 +40,33 @@ import router from '@/router'
         },
 
         methods: {
-            openArtist() {
-                router.push({name: 'artist.single', params: {id: this.artist.id}})
-            }   
+            addToFavourites() {
+                api.put(`http://music.local/api/favourite/artists/add-to-favourites/${this.artist.id}`)
+                this.artist.isFavourite = true
+            },
+
+            removeFromFavourites() {
+                api.put(`http://music.local/api/favourite/artists/delete-from-favourites/${this.artist.id}`)
+                this.artist.isFavourite = false
+
+                if (this.$parent.$data.favouriteArtists) {
+                    this.hideArtistCard()
+                }
+            },
+
+            hideArtistCard() {
+                const artistCard = document.getElementById(`artist_${this.artist.id}`)
+                artistCard.style.opacity = '0'
+                setTimeout(() => {
+                    artistCard.remove()
+                }, 500)
+            },
         }
     }
 </script>
 
 <style scoped>
-    .artist-card-container {
+    .artist-card {
         display: flex;
         flex-direction: column;
         margin: 10px;
@@ -64,7 +80,7 @@ import router from '@/router'
         transition: all 0.5s ease-out;
     }
 
-    .artist-card-container:hover {
+    .artist-card:hover {
         background-color: rgba(125, 125, 125, 0.2);
     }
 
@@ -99,7 +115,7 @@ import router from '@/router'
         align-items: center;
     }
 
-    .artist-card-container:hover .artist-photo-container__photo-overlay {
+    .artist-card:hover .artist-photo-container__photo-overlay {
         background-color: rgba(255, 255, 255, 0.7); 
     } 
 
@@ -151,7 +167,7 @@ import router from '@/router'
         transition: all 0.2s ease-out;
     }
 
-    .artist-card-container:hover .photo-overlay__is-favourite {
+    .artist-card:hover .photo-overlay__is-favourite {
         opacity: 1;
     } 
 

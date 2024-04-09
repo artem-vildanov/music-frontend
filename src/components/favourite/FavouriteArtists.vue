@@ -9,8 +9,6 @@
             </template>
         </div>
     </div>
-    
-    
 </template>
 
 <script>
@@ -60,7 +58,7 @@ import ArtistCard from '../artist/ArtistCard.vue';
     }   
 
     .artists {
-        width: 440px;
+        width: 424px;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;

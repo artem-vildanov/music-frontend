@@ -76,7 +76,7 @@ const router = createRouter({
     {
       path: '/playlists',
       name: 'playlist.all',
-      component: () => import('../components/playlist/AllPlaylists.vue')
+      component: () => import('../components/playlist/UserPlaylists.vue')
     },
     {
       path: '/playlists/:id',

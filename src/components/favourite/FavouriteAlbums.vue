@@ -1,8 +1,13 @@
 <template>
     <div class="favourite-albums">
-        <template v-for="album in favouriteAlbums">
-            <album-card :album="album"></album-card>
-        </template>
+        <div class="title">
+            Любимые альбомы
+        </div>
+        <div class="albums">
+            <template v-for="album in favouriteAlbums">
+                <album-card :album="album"></album-card>
+            </template>
+        </div>
     </div>
 </template>
 
@@ -36,13 +41,29 @@ import AlbumCard from '../album/AlbumCard.vue'
 </script>
 
 <style scoped>
-    .favourite-artists {
-        width: 400px;
+    .favourite-albums {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .title {
+        /* font-weight: 600; */
+        font-size: 25px;
+        background-color: rgba(125, 125, 125, 0.1);
+        width: fit-content;
+        padding: 5px 10px;
+        border-radius: 10px;
+    }   
+
+    .albums {
+        width: 424px; /** ширина при которой контейнер альбомов вмещает ровно два альбома по ширине */
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        padding: 20px;
-        background-color: white;
+        padding: 10px;
+        background-color: rgba(125, 125, 125, 0.1);
         border-radius: 20px;
     }
 </style>

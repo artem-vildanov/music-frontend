@@ -1,21 +1,21 @@
 <template>
-    <div class="album-card-container select-none">
+    <div class="album-card" :id="`album_${album.id}`">
 
         <div class="album-photo-container">
-            <div class="album-photo-container__photo-overlay">
+            <div class="album-photo-container__photo-overlay select-none">
                 <div class="photo-overlay__is-favourite">
-                    <img v-show="album.isFavourite" class="icon" src="../../icons/liked.svg">
-                    <img v-show="!album.isFavourite" class="icon" src="../../icons/not_liked.svg">
+                    <img @click.prevent="removeFromFavourites()" v-show="album.isFavourite" class="icon" src="../../icons/liked.svg">
+                    <img @click.prevent="addToFavourites()" v-show="!album.isFavourite" class="icon" src="../../icons/not_liked.svg">
                 </div>
             </div>
-            <img class="album-photo-container__photo" v-show="!imageError" :src="photoSrc" @error="this.imageError = true">
-            <img class="album-photo-container__photo" v-show="imageError" :src="altPhotoSrc">
+            <img class="album-photo-container__photo select-none" v-show="!imageError" :src="photoSrc" @error="this.imageError = true">
+            <img class="album-photo-container__photo select-none" v-show="imageError" :src="altPhotoSrc">
         </div>
 
         <div class="album-info">
-            <div :title="album.name" @click.prevent="openAlbum()" class="album-info__name">
+            <router-link :title="album.name" :to="{ name: 'album.single', params: { id: album.id }}" class="album-info__name">
                 {{ album.name }}
-            </div>
+            </router-link>
             <router-link :to="{ name: 'artist.single', params: { id: album.id }}" class="album-info__artist-name">
                 {{ album.artistName }}
             </router-link>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import router from '@/router';
+import api from '@/api'
     export default {
         name: "AlbumCard",
 
@@ -41,15 +41,33 @@ import router from '@/router';
         ],
 
         methods: {
-            openAlbum() {
-                router.push({name: 'album.single', params: {id: this.album.id}})
-            }
+            addToFavourites() {
+                api.put(`http://music.local/api/favourite/albums/add-to-favourites/${this.album.id}`)
+                this.album.isFavourite = true
+            },
+
+            removeFromFavourites() {
+                api.put(`http://music.local/api/favourite/albums/delete-from-favourites/${this.album.id}`)
+                this.album.isFavourite = false
+
+                if (this.$parent.$data.favouriteAlbums) {
+                    this.hideAlbumCard()
+                }
+            },
+
+            hideAlbumCard() {
+                const albumCard = document.getElementById(`album_${this.album.id}`)
+                albumCard.style.opacity = '0'
+                setTimeout(() => {
+                    albumCard.remove()
+                }, 500)
+            },
         }
     }
 </script>
 
 <style scoped>
-    .album-card-container {
+    .album-card {
         display: flex;
         flex-direction: column;
         margin: 10px;
@@ -64,7 +82,7 @@ import router from '@/router';
         transition: all 0.5s ease-out;
     }
 
-    .album-card-container:hover {
+    .album-card:hover {
         background-color: rgba(125, 125, 125, 0.2);
     }
 
@@ -98,7 +116,7 @@ import router from '@/router';
         align-items: center;
     }
 
-    .album-card-container:hover .album-photo-container__photo-overlay {
+    .album-card:hover .album-photo-container__photo-overlay {
         background-color: rgba(255, 255, 255, 0.7); 
     } 
 
@@ -176,7 +194,7 @@ import router from '@/router';
         transition: all 0.2s ease-out;
     }
 
-    .album-card-container:hover .photo-overlay__is-favourite {
+    .album-card:hover .photo-overlay__is-favourite {
         opacity: 1;
     } 
 

@@ -13,7 +13,6 @@
         </div>
 
         <div class="song-info-container">
-            
             <div :title="song.name" class="song-info-container__name">
                 {{ song.name }}
             </div>
@@ -59,22 +58,12 @@ import api from "@/api"
 
         methods: {
             addToFavourites() {
-                console.log('add to favourites')
                 api.put(`http://music.local/api/favourite/songs/add-to-favourites/${this.song.id}`)
-                    .then( res => {
-                        console.log(res)
-                    })
-
                 this.song.isFavourite = true
             },
 
             removeFromFavourites() {
-                console.log('remove from favourites')
                 api.put(`http://music.local/api/favourite/songs/delete-from-favourites/${this.song.id}`)
-                    .then( res => {
-                        console.log(res)
-                    })
-
                 this.song.isFavourite = false
 
                 if (this.$parent.$data.favouriteSongs) {
