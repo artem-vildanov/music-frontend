@@ -82,7 +82,8 @@ import api from '@/api';
     .create-playlist {
         width: 100%;
         height: 100%;
-        background-color: white;
+        background-color: rgba(255, 255, 255, 1);
+        border: solid 1px rgba(125, 125, 125, 0.4);
         padding: 20px;
         border-radius: 20px;
 
