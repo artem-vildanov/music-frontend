@@ -61,19 +61,21 @@ import CreatePlaylist from '../playlist/CreatePlaylist.vue'
                 modal.style.opacity = "1"
                 
                 setTimeout(() => {
-                    this.closeModalWindow(modal)
+                    this.overlayClickListener()
                 }, 500)
             },
 
-            closeModalWindow(modal) {
+            overlayClickListener() {
                 const overlay = document.getElementById('overlay')
-                overlay.addEventListener('click', hideModal)
+                overlay.addEventListener('click', this.hideModal)
+            },
 
-                function hideModal() {
-                    modal.style.visibility = "hidden"
-                    modal.style.opacity = "0"
-                    overlay.removeEventListener('click', hideModal)
-                }
+            hideModal() {
+                const modal = document.getElementById("modal")
+                const overlay = document.getElementById('overlay')
+                modal.style.visibility = "hidden"
+                modal.style.opacity = "0"
+                overlay.removeEventListener('click', this.hideModal)
             }
         }
     }

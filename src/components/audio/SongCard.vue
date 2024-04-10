@@ -27,34 +27,52 @@
                 <img @click.prevent="addToFavourites()" v-show="!song.isFavourite" class="icon" src="../../icons/not_liked.svg">
             </div>
             <div class="song-actions-container__add-to-playlist">
-                <img @click.prevent="openModalWindow()" class="centered-icon icon" src="../../icons/playlist.svg">
+                <img @click.prevent="openModalWindow(`song_${song.id}`)" class="centered-icon icon" src="../../icons/playlist.svg">
             </div>
-        </div>  
+        </div>
 
-        <div id="modal" class="add-to-playlist-modal">
-            <div id="overlay" class="add-to-playlist-modal__overlay">
+        <!-- вынести в отдельный компонент SelectPlaylist -->
 
-            </div>
-            <div class="add-to-playlist-modal__window" v-if="userPlaylists">
-                <div class="playlists" >
-                    <template v-for="playlist in userPlaylists">
-                        <div class="playlist-card" :id="`playlist_${playlist.id}`">
-                            <div class="selection-overlay"></div>
-                            <div class="selection-unactive"></div>
+        <div class="modal">
+            <div class="modal__overlay"></div>
+            <div class="modal__window">
+                <div class="playlist-selection">
+                    <div class="title">
+                        Выберите плейлисты
+                    </div>
+                    <div class="playlists" v-show="userPlaylists">
+                        <template v-for="playlist in userPlaylists">
+                            <div class="playlist-card" :id="`playlist_${playlist.id}`">
 
-                            <div class="playlist-photo-container">
-                                <img class="playlist-photo-container__photo select-none" v-show="!imageError" :src="photoSrc" @error="this.imageError = true"> 
-                                <img class="playlist-photo-container__photo select-none" v-show="imageError" :src="altPhotoSrc">
-                            </div>
+                                <div v-if="checkIfSongInPlaylist(playlist.id)" class="unavailable-playlist">
+                                    Плейлист<br>
+                                    уже содержит
+                                    этот трек
+                                </div>
 
-                            <div class="playlist-info">
-                                <div class="playlist-info__name">
-                                    {{ playlist.name }}
+                                <template v-if="!checkIfSongInPlaylist(playlist.id)">
+                                    <div class="selection-overlay"></div>
+                                    <div @click.prevent="selectPlaylist(playlist.id)" class="selection-mark"></div>
+                                </template>
+
+                                <div class="playlist-photo-container">
+                                    <img class="playlist-photo-container__photo select-none" v-show="!imageError" :src="photoSrc" @error="this.imageError = true">
+                                    <img class="playlist-photo-container__photo select-none" v-show="imageError" :src="altPhotoSrc">
+                                </div>
+
+                                <div class="playlist-info">
+                                    <div class="playlist-info__name">
+                                        {{ playlist.name }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </template>
+                        </template>
+                    </div>
+                    <div @click.prevent="addSongToPlaylists()" class="submit-button">
+                        Добавить
+                    </div>
                 </div>
+
             </div>
             
         </div>
@@ -80,17 +98,19 @@ import api from "@/api"
                 imageError: null,
                 photoSrc: `http://music.local:9005/photo/${this.song.photoPath}`,
                 altPhotoSrc: "/src/icons/base_img.jpg",
-                userPlaylists: null
+                userPlaylists: null,
+                selectedPlaylists: []
             }
         },
 
-        computed: {
-            imageSource() {
-                return `http://music.local:9005/photo/${this.song.photoPath}`
-            }
+        mounted() {
+            console.log(this.song)
         },
 
         methods: {
+
+            // TODO вынести в отдельный компонент для выбора плейлиста
+
             getUserPlaylists() {
                 api.get('http://music.local/api/playlists')
                 .then( res => {
@@ -101,26 +121,80 @@ import api from "@/api"
             openModalWindow() {
                 this.getUserPlaylists();
 
-                const modal = document.getElementById("modal")
+                const songCard = document.getElementById(`song_${this.song.id}`);
+                const modal = songCard.querySelector('.modal')
                 
                 modal.style.visibility = "visible"
                 modal.style.opacity = "1"
                 
                 setTimeout(() => {
-                    this.closeModalWindow(modal)
+                    this.overlayClickListener()
                 }, 500)
             },
 
-            closeModalWindow(modal) {
-                const overlay = document.getElementById('overlay')
-                overlay.addEventListener('click', hideModal)
+            overlayClickListener() {
+                const songCard = document.getElementById(`song_${this.song.id}`);
 
-                function hideModal() {
-                    modal.style.visibility = "hidden"
-                    modal.style.opacity = "0"
-                    overlay.removeEventListener('click', hideModal)
+                const overlay = songCard.querySelector('.modal__overlay')
+                overlay.addEventListener('click', this.hideModal);
+            },
+
+            hideModal() {
+                const songCard = document.getElementById(`song_${this.song.id}`);
+                const overlay = songCard.querySelector('.modal__overlay')
+                const modal = songCard.querySelector('.modal')
+                modal.style.visibility = "hidden"
+                modal.style.opacity = "0"
+                overlay.removeEventListener('click', this.hideModal)
+            },
+
+            selectPlaylist(selectedPlaylistId) {
+                const songCard = document.getElementById(`song_${this.song.id}`)
+                const playlist = songCard.querySelector(`#playlist_${selectedPlaylistId}`);
+
+                const selectionOverlay = playlist.querySelector('.selection-overlay');
+                const selectionMark = playlist.querySelector('.selection-mark');
+
+                if (selectionOverlay.classList.contains("selected") && selectionMark.classList.contains("selected")) {
+                    selectionOverlay.classList.remove("selected");
+                    selectionMark.classList.remove("selected");
+                    removeFromSelected.bind(this)(selectedPlaylistId)
+                } else {
+                    selectionOverlay.classList.add("selected");
+                    selectionMark.classList.add("selected");
+                    this.selectedPlaylists.push(selectedPlaylistId);
+                }
+
+                function removeFromSelected(elementToRemove) {
+                    let index = this.selectedPlaylists.indexOf(elementToRemove);
+
+                    if (index !== -1) {
+                        this.selectedPlaylists.splice(index, 1);
+                    }
                 }
             },
+
+            addSongToPlaylists() {
+                this.selectedPlaylists.forEach( playlistId => {
+                    api.put(`http://music.local/api/playlists/${playlistId}/add-song/${this.song.id}`)
+                        .then( res=> {
+                            this.hideModal();
+                            this.song.containedInPlaylists.push({ id: playlistId })
+                        })
+                })
+
+            },
+
+            checkIfSongInPlaylist(playlistId) {
+                const playlistsWithSong = []
+                this.song.containedInPlaylists.forEach((element) => {
+                    playlistsWithSong.push(element.id)
+                })
+
+                return playlistsWithSong.includes(playlistId);
+            },
+
+
 
             addToFavourites() {
                 api.put(`http://music.local/api/favourite/songs/add-to-favourites/${this.song.id}`)
@@ -143,6 +217,8 @@ import api from "@/api"
                     songCard.remove()
                 }, 500)
             },
+
+
         }
 
     }
@@ -277,6 +353,7 @@ import api from "@/api"
         border-radius: 50%;
         transition: all 0.2s ease-out;
         padding: 5px;
+        cursor: pointer;
     }
 
     .song-actions-container__is-favourite:hover {
@@ -292,6 +369,7 @@ import api from "@/api"
         border-radius: 50%;
         transition: all 0.2s ease-out;
         padding: 2px;
+        cursor: pointer;
     }
 
     .song-actions-container__add-to-playlist:hover {
@@ -309,7 +387,7 @@ import api from "@/api"
 
     /** modal window */
 
-    .add-to-playlist-modal {
+    .modal {
         position: fixed;
 
         top:0;
@@ -332,14 +410,14 @@ import api from "@/api"
         transition: opacity 0.5s, visibility 0.5s, backdrop-filter 0.2s; 
     }
 
-    .add-to-playlist-modal__overlay {
+    .modal__overlay {
         position: absolute;
         width: inherit;
         height: inherit;
         background-color: rgba(125, 125, 125, 0.2);
     }
 
-    .add-to-playlist-modal__window {
+    .modal__window {
         position: absolute;
         z-index: 21;
     }
@@ -352,11 +430,117 @@ import api from "@/api"
         flex-wrap: wrap;
         justify-content: center;
         padding: 10px;
-        background-color: rgb(255, 255, 255);
+        background-color: rgba(125, 125, 125, 0.2);
         border-radius: 20px;
     }
 
-    
+
+    /** selection */
+
+    .playlist-selection {
+        background-color: white;
+        border-radius: 20px;
+        padding: 20px;
+        width: fit-content;
+
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .title {
+        width: fit-content;
+        background-color: rgba(125, 125, 125, 0.2);
+        padding: 5px 10px;
+        border-radius: 10px;
+        font-size: 20px;
+    }
+
+    .submit-button {
+        background-color: rgba(125, 125, 125, 0.2);
+        padding: 5px 10px;
+        border-radius: 10px;
+        width: fit-content;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .submit-button:hover {
+        background-color: rgba(125, 125, 125, 0.4);
+    }
+
+    .submit-button:active {
+        background-color: rgba(125, 125, 125, 0.8);
+    }
+
+    .selection-overlay {
+        position:absolute;
+        z-index:22;
+
+        background-color: rgba(124, 124, 124, 0.2);
+        border-radius: 10px;
+        width: 182px;
+        height: 224px;
+
+        transition: opacity 0.5s;
+        opacity: 0;
+    }
+
+    .selection-mark {
+        position:absolute;
+        opacity: 0;
+        transition: opacity 0.5s, background-color 0.2s;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 5px solid white;
+
+        z-index:23;
+    }
+
+    .selection-mark:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .selection-mark:active {
+        background-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .playlist-card:hover .selection-mark {
+        opacity: 1;
+    }
+
+    .playlist-card:hover .selection-overlay {
+        opacity: 1;
+    }
+
+    .selected {
+        opacity: 1;
+    }
+
+    .selection-mark.selected {
+        background-color: white;
+    }
+
+    .unavailable-playlist {
+        position:absolute;
+        z-index:22;
+
+        background-color: rgba(124, 124, 124, 0.4);
+        border-radius: 10px;
+        width: 182px;
+        height: 224px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 25px;
+        font-size: 15px;
+        text-align: center;
+        font-weight: bold;
+        color: white;
+    }
 
     /** playlist card */
 
@@ -366,7 +550,7 @@ import api from "@/api"
         margin: 10px;
         padding: 15px;
         width: fit-content;
-        height: fit-content; 
+        height: fit-content;
 
         /* width: 28%; */
 
@@ -376,48 +560,6 @@ import api from "@/api"
 
         justify-content: center;
         align-items: center;
-    }
-
-    .playlist-selection-active {
-        position:absolute;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: gray;
-        border: 5px solid gray;
-        z-index:22;
-    }
-
-    .selection-overlay {
-        position:absolute;
- 
-        transition: background-color 0.5s;
-        width: 182px;
-        height: 224px;
-        
-
-        z-index:22;
-    }
-
-    .selection-unactive {
-        position:absolute;
-        opacity: 0;
-        transition: opacity 0.5s;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        
-        border: 5px solid rgb(255, 255, 255);
-
-        z-index:23;
-    }
-
-    .playlist-card:hover .selection-unactive {
-        opacity: 1;
-    }
-
-    .playlist-card:hover .selection-overlay {
-        background-color: rgba(124, 124, 124, 0.2);
     }
 
     .playlist-photo-container {
@@ -459,7 +601,7 @@ import api from "@/api"
         transition: all 0.2s ease-out; 
     }
 
-    .pointer-events-none {
-        pointer-events: none;
-    }
+    /*.pointer-events-none {*/
+    /*    pointer-events: none;*/
+    /*}*/
 </style>

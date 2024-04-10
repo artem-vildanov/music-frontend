@@ -45,14 +45,11 @@ import api from '@/api';
             },
 
             createPlaylist() {
-                
                 const formData = this.makeFormData()
 
-                
-                api.post('http://music.local/api/playlists/create-playlist', formData)
-                    .then( res => {
-                        console.log(res)
-                    })
+                api.post('http://music.local/api/playlists/create-playlist', formData);
+
+                this.$parent.hideModal();
             },
 
             makeFormData() {
@@ -65,12 +62,11 @@ import api from '@/api';
                 }
 
                 const nameInput = document.getElementById('nameInput');
-                formData.append('name', nameInput.value);
-                
-
-                for (let key of formData.keys()) {
-                    console.log(`${key}: ${formData.get(key)}`);
+                if (!nameInput.value) {
+                    throw new Error('playlist name unset')
                 }
+
+                formData.append('name', nameInput.value);
 
                 return formData;
             }
@@ -154,6 +150,7 @@ import api from '@/api';
         width: fit-content;
         font-size: 20px;
         transition: 0.2s background-color;
+        cursor: pointer;
     }
 
     .submit-button:hover {

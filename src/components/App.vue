@@ -13,13 +13,22 @@
             <router-link class="navbar__link" v-show="accessToken" :to="{ name: 'artist.all' }">
                 All artists 
             </router-link>
-            <router-link class="navbar__link" v-show="accessToken" :to="{ name: 'favourite.collection' }">
+            <div class="navbar__dropdown-link" v-show="accessToken">
                 Коллекция
-            </router-link>
+                <div class="dropdown-list">
+                    <router-link class="dropdown-list__item" :to="{ name:'favourite.songs' }">Любимые треки</router-link>
+                    <router-link class="dropdown-list__item" :to="{ name:'playlist.all' }">Ваши плейлисты</router-link>
+                    <router-link class="dropdown-list__item" :to="{ name:'favourite.albums' }">Любимые альбомы</router-link>
+                    <router-link class="dropdown-list__item" :to="{ name:'favourite.artists' }">Любимые артисты</router-link>
+                </div>
+            </div>
+
             <a class="navbar__link navbar__logout" @click.prevent="logout" href="#" v-show="accessToken">
                 Выйти
             </a>
         </nav>
+
+
         
         
         <router-view class="container"></router-view>
@@ -76,7 +85,7 @@
     }
 
     .navbar {
-        z-index: 10;
+        z-index: 20;
 
         right: 20%;
         left: 20%;
@@ -90,9 +99,23 @@
         align-items: center;
         border-top: 0;
 
-        background-color: rgba(125, 125, 125, 0.1);
-        backdrop-filter: blur(10px);
+        /*background-color: rgba(125, 125, 125, 0.1);*/
+        /*backdrop-filter: blur(20px);*/
         /* background-color: #121428; */
+    }
+
+    .navbar:before {
+        content: '';
+        position: absolute;
+        z-index: -1;
+        right: 0;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        border-radius: 0px 0px 20px 20px;
+
+        background-color: rgba(125, 125, 125, 0.1);
+        backdrop-filter: blur(20px);
     }
 
     .navbar__link {
@@ -100,6 +123,7 @@
         font-size: 20px;
         margin: 5px;
         padding: 5px 10px;
+        cursor: pointer;
         transition: 
             background 0.5s ease-out,
             color 0.5s ease-out,
@@ -110,7 +134,7 @@
 
     .navbar__link:hover {
         text-decoration: none;
-        background-color: rgb(125, 125, 125, 0.2);
+        background-color: rgba(125, 125, 125, 0.2);
         color: rgba(1, 1, 1, 1);
     }
 
@@ -126,6 +150,62 @@
     .navbar__logout:hover {
         background-color: rgb(197, 26, 55);
         color: white;
+    }
+
+    .dropdown-link {
+        /*position: absolute;*/
+    }
+
+    .navbar__dropdown-link {
+        color: rgba(1, 1, 1, 0.7);
+        font-size: 20px;
+        margin: 5px;
+        padding: 5px 10px;
+        transition: background 0.5s, color 0.5s;
+
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .navbar__dropdown-link:hover .dropdown-list {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .dropdown-list {
+        margin-top: 15px;
+        left: 245px;
+        position: absolute;
+        z-index: 11;
+        opacity: 0;
+        visibility: hidden;
+        transition: visibility 0.2s, opacity 0.2s;
+        padding: 20px;
+        background-color: rgba(125, 125, 125, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+    }
+
+    .dropdown-list__item {
+        margin: 5px;
+        padding: 3px 10px;
+        width: fit-content;
+        border-radius: 10px;
+        transition: background-color 0.2s;
+        cursor: pointer;
+
+        color: black;
+        word-break: unset;
+        display: block;
+    }
+
+    .dropdown-list__item:hover {
+        background-color: rgba(125, 125, 125, 0.4);
+        text-decoration: none;
+    }
+
+    .dropdown-list__item:active {
+        background-color: rgba(125, 125, 125, 0.8);
     }
 
     .container {
@@ -145,15 +225,6 @@
         /* justify-content: end; */
     }
 
-    .container__content {
-
-    }
-
-    /* .container__footer {
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-    } */
 
     .audio-player {
         position: fixed;

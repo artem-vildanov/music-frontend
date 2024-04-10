@@ -135,23 +135,22 @@ import api from '@/api'
         white-space: nowrap;
         text-overflow: ellipsis;
         font-size: 15px;
-        font-weight: 200;
         color: rgb(70, 70, 70);
         
         padding: 2.5px 7px;
         border-radius: 10px;
-        outline: 4px solid rgb(124, 124, 124, 0);
+        outline: 4px solid rgba(124, 124, 124, 0);
         transition: all 0.2s ease-out; 
     }
 
     .album-info__name:hover {
-        background-color: rgb(124, 124, 124, 0.2); 
+        background-color: rgba(124, 124, 124, 0.2);
         color: black;      
         text-decoration: none;  
     }
 
     .album-info__name:active {
-        background-color: rgb(124, 124, 124, 0.5);
+        background-color: rgba(124, 124, 124, 0.5);
         /* outline: 4px solid rgb(124, 124, 124, 0.25); */
     }
 
@@ -162,23 +161,22 @@ import api from '@/api'
         white-space: nowrap;
         text-overflow: ellipsis;
         font-size: 12px;
-        font-weight: 100;
         color: rgb(100, 100, 100);
         
         padding: 2.5px 7px;
         border-radius: 10px;
-        outline: 4px solid rgb(124, 124, 124, 0);
+        outline: 4px solid rgba(124, 124, 124, 0);
         transition: all 0.2s ease-out; 
     }
 
     .album-info__artist-name:hover {
-        background-color: rgb(124, 124, 124, 0.2); 
+        background-color: rgba(124, 124, 124, 0.2);
         color: black;      
         text-decoration: none;  
     }
 
     .album-info__artist-name:active {
-        background-color: rgb(124, 124, 124, 0.5);
+        background-color: rgba(124, 124, 124, 0.5);
     }
 
     .photo-overlay__is-favourite {
