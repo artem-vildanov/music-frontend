@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <h1>Personal info</h1>
+    <div class="personal-info">
+        <h1 class="title">Мои данные</h1>
         <div>{{ this.personalInfo }}</div>
     </div>
 </template>
@@ -33,3 +33,16 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    .personal-info {
+        padding: 20px;
+    }
+
+    .title {
+        padding: 3px 10px;
+        background-color: rgba(125, 125, 125, 0.2);
+        border-radius: 10px;
+        width: fit-content;
+    }
+</style>
