@@ -13,9 +13,12 @@
                     {{ album.artistName }}
                 </router-link>
                 <div class="info-container__actions-container">
-                    <div class="actions-container__is-favourite">
+                    <div class="actions-container__action">
                         <img v-show="album.isFavourite" class="icon select-none" src="../../icons/liked.svg">
                         <img v-show="!album.isFavourite" class="icon select-none" src="../../icons/not_liked.svg">
+                    </div>
+                    <div v-show="album.artistId === userInfo.artistId" class="actions-container__action">
+                        <img class="icon select-none" src="/src/icons/edit.svg">
                     </div>
                 </div>
             </div>
@@ -45,7 +48,8 @@
                 albumId: this.$route.params.id, // TODO test it!
                 album: null,
                 albumSongs: null,
-                altPhotoSrc: "/src/icons/base_img.jpg"
+                altPhotoSrc: "/src/icons/base_img.jpg",
+                userInfo: null
             }
         },
 
@@ -58,8 +62,9 @@
         },
 
         mounted() {
-            this.getAlbum()
-            this.getAlbumSongs()
+            this.getAlbum();
+            this.getAlbumSongs();
+            this.getUserInfo();
         },
 
         methods: {
@@ -76,7 +81,14 @@
                     this.albumSongs = res.data
                     console.log(this.albumSongs)
                 })
-            }
+            },
+
+            getUserInfo() {
+                api.get(`http://music.local/api/auth/me`)
+                    .then( res => {
+                        this.userInfo = res.data
+                    })
+            },
         }
     }
 </script>
@@ -166,7 +178,13 @@
         background-color: rgba(125, 125, 125, 1);
     }
 
-    .actions-container__is-favourite {
+    .info-container__actions-container {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .actions-container__action {
         border-radius: 50%;
         display: flex;
         width: fit-content;
@@ -176,11 +194,11 @@
         transition: all 0.2s ease-out;
     }
 
-    .actions-container__is-favourite:hover {
+    .actions-container__action:hover {
         background-color: rgb(128, 128, 128, 0.25);
     }
 
-    .actions-container__is-favourite:active {
+    .actions-container__action:active {
         background-color: gray;
     }
 

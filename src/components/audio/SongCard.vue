@@ -26,9 +26,16 @@
                 <img @click.prevent="removeFromFavourites()" v-show="song.isFavourite" class="icon" src="../../icons/liked.svg">
                 <img @click.prevent="addToFavourites()" v-show="!song.isFavourite" class="icon" src="../../icons/not_liked.svg">
             </div>
-            <div class="song-actions-container__add-to-playlist">
-                <img @click.prevent="openModalWindow(`song_${song.id}`)" class="centered-icon icon" src="../../icons/playlist.svg">
+            <div class="song-actions-container__open-more-actions">
+                <img class="icon" src="/src/icons/more.svg">
+                <div class="song-actions-container__more-actions-container">
+                <div class="song-actions-container__add-to-playlist">
+                    <img @click.prevent="openModalWindow(`song_${song.id}`)" class="centered-icon icon" src="../../icons/playlist.svg">
+                </div>
             </div>
+            </div>
+            
+            
         </div>
 
         <!-- вынести в отдельный компонент SelectPlaylist -->
@@ -348,6 +355,7 @@ import api from "@/api"
         background-color: rgba(125, 125, 125, 0);
     }
 
+    .song-actions-container__open-more-actions,
     .song-actions-container__is-favourite {
         margin: 0px 2px;
         border-radius: 50%;
@@ -356,10 +364,12 @@ import api from "@/api"
         cursor: pointer;
     }
 
+    .song-actions-container__open-more-actions:hover,
     .song-actions-container__is-favourite:hover {
         background-color: rgba(125, 125, 125, 0.3);
     }
 
+    .song-actions-container__open-more-actions:active,
     .song-actions-container__is-favourite:active {
         background-color: rgba(125, 125, 125, 1);
     }
@@ -378,6 +388,23 @@ import api from "@/api"
 
     .song-actions-container__add-to-playlist:active {
         background-color: rgba(125, 125, 125, 1);
+    }
+
+    .song-actions-container__open-more-actions:hover .song-actions-container__more-actions-container {
+        visibility: visible;
+        opacity: 1;
+    } 
+
+    .song-actions-container__more-actions-container {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.2s, visibility 0.2s;
+        padding: 10px;
+        position: absolute;
+        background-color: rgba(125, 125, 125, 0.3);
+        z-index: 2;
+        align-self: center;
+        
     }
 
     .icon {

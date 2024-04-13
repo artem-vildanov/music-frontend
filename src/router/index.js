@@ -21,11 +21,18 @@ const router = createRouter({
       name: 'auth.signup',
       component: () => import('../components/auth/Signup.vue')
     },
+
+    // account
     {
-      path: '/personal',
-      name: 'auth.personal',
-      component: () => import('../components/auth/Personal.vue')
+      path: '/account',
+      name: 'account.user',
+      component: () => import('../components/account/Account.vue')
     },
+    // {
+    //   path: '/account/artist-account',
+    //   name: 'account.artist',
+    //   component: () => import('../components/account/ArtistAccount.vue'),
+    // },
 
     // artist
     {
@@ -101,7 +108,7 @@ router.beforeEach((to, from, next) => {
 
   if ((to.name === 'auth.login' || to.name === 'auth.signup') && accessToken) {
       return next({
-          name: 'auth.personal'
+          name: 'account.user'
       })
   }
 

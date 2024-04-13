@@ -7,7 +7,7 @@
             <router-link class="navbar__link" v-show="!accessToken" :to="{ name: 'auth.signup' }">
                 Регистрация
             </router-link>
-            <router-link class="navbar__link" v-show="accessToken" :to="{ name: 'auth.personal' }">
+            <router-link class="navbar__link" v-show="accessToken" :to="{ name: 'account.user' }">
                 Профиль
             </router-link>
             <router-link class="navbar__link" v-show="accessToken" :to="{ name: 'artist.all' }">
@@ -152,10 +152,6 @@
         color: white;
     }
 
-    .dropdown-link {
-        /*position: absolute;*/
-    }
-
     .navbar__dropdown-link {
         color: rgba(1, 1, 1, 0.7);
         font-size: 20px;
@@ -173,14 +169,14 @@
     }
 
     .dropdown-list {
-        margin-top: 15px;
-        left: 245px;
+        /* margin-top: 15px; */
+        /* left: 245px; */
         position: absolute;
         z-index: 11;
         opacity: 0;
         visibility: hidden;
         transition: visibility 0.2s, opacity 0.2s;
-        padding: 20px;
+        padding: 10px;
         background-color: rgba(125, 125, 125, 0.1);
         backdrop-filter: blur(10px);
         border-radius: 10px;
@@ -193,14 +189,16 @@
         border-radius: 10px;
         transition: background-color 0.2s;
         cursor: pointer;
+        font-size: 16px;
 
-        color: black;
+        color: rgba(0, 0, 0, 0.8);
         word-break: unset;
         display: block;
     }
 
     .dropdown-list__item:hover {
         background-color: rgba(125, 125, 125, 0.4);
+        color: rgba(0, 0, 0, 1);
         text-decoration: none;
     }
 

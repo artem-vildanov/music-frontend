@@ -10,9 +10,12 @@
                     {{ artist.name }}
                 </div>
                 <div class="info-container__actions-container">
-                    <div class="actions-container__is-favourite">
+                    <div class="actions-container__action">
                         <img v-show="artist.isFavourite" class="icon select-none" src="../../icons/liked.svg">
                         <img v-show="!artist.isFavourite" class="icon select-none" src="../../icons/not_liked.svg">
+                    </div>
+                    <div v-show="artist.id === userInfo.artistId" class="actions-container__action">
+                        <img class="icon select-none" src="/src/icons/edit.svg">
                     </div>
                 </div>
             </div>
@@ -35,35 +38,28 @@ import AlbumCard from "../album/AlbumCard.vue";
         components: {AlbumCard},
         data() {
             return {
-                artistId: null,
+                artistId: this.$route.params.id,
                 artist: null,
                 artistAlbums: null,
                 imageError: false,
-                altPhotoSrc: "/src/icons/base_img.jpg"
-            }
-        },
-
-        computed: {
-            photoSrc() {
-                if (this.artist) {
-                    return `http://music.local:9005/photo/${this.artist.photoPath}`
-                }
+                photoSrc: null,
+                altPhotoSrc: "/src/icons/base_img.jpg",
+                userInfo: null
             }
         },
 
         mounted() {
-            this.getArtistId()
             this.getArtist()
-            this.getArtistAlbums()
+                .then(() => {
+                    this.photoSrc = `http://music.local:9005/photo/${this.artist.photoPath}`;
+                });
+            this.getArtistAlbums();
+            this.getUserInfo();
         },
 
         methods: {
-            getArtistId() {
-                this.artistId = this.$route.params.id
-            },
-
             getArtist() {
-                api.get(`http://music.local/api/artists/${this.artistId}`)
+                return api.get(`http://music.local/api/artists/${this.artistId}`)
                     .then( res => {
                         this.artist = res.data
                     })
@@ -76,8 +72,11 @@ import AlbumCard from "../album/AlbumCard.vue";
                     })
             },
 
-            setAltImg() {
-                this.imageError = true
+            getUserInfo() {
+                api.get(`http://music.local/api/auth/me`)
+                    .then( res => {
+                        this.userInfo = res.data
+                    })
             },
         }
 
@@ -148,8 +147,13 @@ import AlbumCard from "../album/AlbumCard.vue";
         margin: 10px;
     }
 
+    .info-container__actions-container {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
 
-    .actions-container__is-favourite {
+    .actions-container__action {
         border-radius: 50%;
         display: flex;
         width: fit-content;
@@ -159,11 +163,11 @@ import AlbumCard from "../album/AlbumCard.vue";
         transition: all 0.2s ease-out;
     }
 
-    .actions-container__is-favourite:hover {
+    .actions-container__action:hover {
         background-color: rgb(128, 128, 128, 0.25);
     }
 
-    .actions-container__is-favourite:active {
+    .actions-container__action:active {
         background-color: gray;
     }
 
