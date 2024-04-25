@@ -22,20 +22,27 @@
         </div>
 
         <div class="song-actions-container">
-            <div class="song-actions-container__is-favourite">
+            <div class="song-actions-container__action">
                 <img @click.prevent="removeFromFavourites()" v-show="song.isFavourite" class="icon" src="../../icons/liked.svg">
                 <img @click.prevent="addToFavourites()" v-show="!song.isFavourite" class="icon" src="../../icons/not_liked.svg">
             </div>
-            <div class="song-actions-container__open-more-actions">
+            <div tabindex="0" class="song-actions-container__action open-hidden-actions">
                 <img class="icon" src="/src/icons/more.svg">
-                <div class="song-actions-container__more-actions-container">
-                <div class="song-actions-container__add-to-playlist">
-                    <img @click.prevent="openModalWindow(`song_${song.id}`)" class="centered-icon icon" src="../../icons/playlist.svg">
+
+                <div class="hidden-actions-container">
+                    <div class="song-actions-container__action hidden-action">
+                        <img @click.prevent="openModalWindow(`song_${song.id}`)" class="centered-icon icon" src="../../icons/playlist.svg">
+                    </div>
+                    <div class="song-actions-container__action hidden-action">
+                        <img @click.prevent="openModalWindow(`song_${song.id}`)" class="centered-icon icon" src="../../icons/playlist.svg">
+                    </div>
+                    <div class="song-actions-container__action hidden-action">
+                        <img @click.prevent="openModalWindow(`song_${song.id}`)" class="centered-icon icon" src="../../icons/playlist.svg">
+                    </div>
                 </div>
+
             </div>
-            </div>
-            
-            
+
         </div>
 
         <!-- вынести в отдельный компонент SelectPlaylist -->
@@ -302,13 +309,11 @@ import api from "@/api"
         background-color: rgba(125, 125, 125, 1);
     }
 
-    .centered-icon { /* иконка проигрывания музыки не была центирована; делаем ее центрированной */
-        margin-left: 5px;
-        margin-top: 2.5px;
-        margin-bottom: 2.5px;
-    }
-
-    
+    /*.centered-icon { !* иконка проигрывания музыки не была центирована; делаем ее центрированной *!*/
+    /*    margin-left: 5px;*/
+    /*    margin-top: 2.5px;*/
+    /*    margin-bottom: 2.5px;*/
+    /*}*/
 
     .song-info-container {
         display: flex;
@@ -355,8 +360,7 @@ import api from "@/api"
         background-color: rgba(125, 125, 125, 0);
     }
 
-    .song-actions-container__open-more-actions,
-    .song-actions-container__is-favourite {
+    .song-actions-container__action {
         margin: 0px 2px;
         border-radius: 50%;
         transition: all 0.2s ease-out;
@@ -364,47 +368,53 @@ import api from "@/api"
         cursor: pointer;
     }
 
-    .song-actions-container__open-more-actions:hover,
-    .song-actions-container__is-favourite:hover {
+    .song-actions-container__action:hover {
         background-color: rgba(125, 125, 125, 0.3);
     }
 
-    .song-actions-container__open-more-actions:active,
-    .song-actions-container__is-favourite:active {
+    .song-actions-container__action:active {
         background-color: rgba(125, 125, 125, 1);
     }
 
-    .song-actions-container__add-to-playlist {
-        margin: 0px 2px;
-        border-radius: 50%;
-        transition: all 0.2s ease-out;
-        padding: 2px;
-        cursor: pointer;
-    }
+    /*.hidden-action {*/
+    /*    display: none;*/
+    /*    visibility: hidden;*/
+    /*    opacity: 0;*/
+    /*    transition: opacity 0.2s, visibility 0.2s;*/
+    /*}*/
 
-    .song-actions-container__add-to-playlist:hover {
-        background-color: rgba(125, 125, 125, 0.3);
-    }
+    .hidden-actions-container {
+        position: absolute;
+        z-index: 5;
+        top: -20px;
+        left: 63px;
 
-    .song-actions-container__add-to-playlist:active {
-        background-color: rgba(125, 125, 125, 1);
-    }
+        background-color: rgb(215, 215, 215);
+        border: solid 1px rgba(125, 125, 125, 0.5);
+        border-radius: 10px;
+        padding: 10px;
+        height: 81px;
 
-    .song-actions-container__open-more-actions:hover .song-actions-container__more-actions-container {
-        visibility: visible;
-        opacity: 1;
-    } 
-
-    .song-actions-container__more-actions-container {
         visibility: hidden;
         opacity: 0;
-        transition: opacity 0.2s, visibility 0.2s;
-        padding: 10px;
-        position: absolute;
-        background-color: rgba(125, 125, 125, 0.3);
-        z-index: 2;
-        align-self: center;
-        
+        transition: opacity 0.5s, visibility 0.5s;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .open-hidden-actions {
+        position: relative;
+    }
+
+    .open-hidden-actions:focus {
+        background-color: rgba(125, 125, 125, 0.7);
+    }
+
+    .open-hidden-actions:focus .hidden-actions-container {
+        visibility: visible;
+        opacity: 1;
     }
 
     .icon {
