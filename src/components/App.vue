@@ -33,7 +33,7 @@
         
         <router-view class="container"></router-view>
         
-        <div class="audio-player">Audio player</div>
+        <!-- <div class="audio-player">Audio player</div> -->
     </div>
 </template>
 

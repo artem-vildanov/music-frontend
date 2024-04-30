@@ -1,11 +1,11 @@
 <template>
     <div class="album-container" v-if="album">
-        <div class="dashboard"><!-- display flex flex-dir: row-->
-            <div class="photo-container"><!-- photo styles -->
+        <div class="dashboard">
+            <div class="photo-container">
                 <img v-show="!imageError" class="album-photo select-none" :src="photoSrc" @error="imageError = true">
                 <img v-show="imageError" class="album-photo select-none" :src="altPhotoSrc">
             </div>
-            <div class="info-container"><!-- dis: flex; flex-dir: column; -->
+            <div class="info-container">
                 <div class="info-container__album-name">
                     {{ album.name }}
                 </div>
@@ -17,7 +17,7 @@
                         <img v-show="album.isFavourite" class="icon select-none" src="../../icons/liked.svg">
                         <img v-show="!album.isFavourite" class="icon select-none" src="../../icons/not_liked.svg">
                     </div>
-                    <div v-show="album.artistId === userInfo.artistId" class="actions-container__action">
+                    <div @click.prevent="openModalWindow()" v-show="album.artistId === userInfo.artistId" class="actions-container__action">
                         <img class="icon select-none" src="/src/icons/edit.svg">
                     </div>
                 </div>
@@ -30,36 +30,44 @@
                 </template>
             </div>
         </div>
+        <div class="modal" id="modal">
+            <div class="modal__overlay" id="overlay"></div>
+            <div class="modal__window">
+                <edit-album :album="album"></edit-album>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
-// TODO test whole component
     import api from "../../api";
     import SongCard from "../audio/SongCard.vue";
+    import CreateAlbum from "../album/CreateAlbum.vue";
+    import EditAlbum from "../album/EditAlbum.vue";
+    import router from '@/router';
     
-
     export default {
         name: "Album",
-        components: {SongCard},
+        components: {SongCard, EditAlbum},
         data() {
             return {
                 imageError: false,
-                albumId: this.$route.params.id, // TODO test it!
+                albumId: this.$route.params.id, 
                 album: null,
                 albumSongs: null,
+                photoSrc: null,
                 altPhotoSrc: "/src/icons/base_img.jpg",
                 userInfo: null
             }
         },
 
-        computed: {
-            photoSrc() {
-                if (this.album) {
-                    return `http://music.local:9005/photo/${this.album.photoPath}`
-                }
-            }
-        },
+        // computed: {
+        //     photoSrc() {
+        //         if (this.album) {
+        //             return `http://music.local:9005/photo/${this.album.photoPath}`
+        //         }
+        //     }
+        // },
 
         mounted() {
             this.getAlbum();
@@ -71,8 +79,9 @@
             getAlbum() {
                 api.get(`http://music.local/api/albums/${this.albumId}`)
                     .then( res => {
-                        this.album = res.data
-                    })
+                        this.album = res.data;
+                        this.photoSrc = `http://music.local:9005/photo/${this.album.photoPath}`;
+                    });
             },
 
             getAlbumSongs() {
@@ -89,6 +98,34 @@
                         this.userInfo = res.data
                     })
             },
+
+            openModalWindow() {
+                const modal = document.getElementById("modal")
+                
+                modal.style.visibility = "visible"
+                modal.style.opacity = "1"
+                
+                setTimeout(() => {
+                    this.overlayClickListener()
+                }, 500)
+            },
+
+            overlayClickListener() {
+                const overlay = document.getElementById('overlay')
+                overlay.addEventListener('click', this.hideModal)
+            },
+
+            hideModal() {
+                const modal = document.getElementById("modal")
+                const overlay = document.getElementById('overlay')
+                modal.style.visibility = "hidden"
+                modal.style.opacity = "0"
+                overlay.removeEventListener('click', this.hideModal)
+            },
+
+            updatePage() {
+                router.push({ name: 'album.single', params: {id: this.album.id}});
+            }
         }
     }
 </script>
@@ -205,5 +242,37 @@
     .icon {
         width: 30px;
         height: 30px;
+    }
+
+    /** MODAL */
+
+    .modal {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+
+        display: flex;
+
+        visibility: hidden;
+        opacity: 0;
+
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(15px);
+
+        transition: opacity 0.5s, visibility 0.5s, backdrop-filter 0.2s; 
+    }
+
+    .modal__overlay {
+        position: absolute;
+        width: inherit;
+        height: inherit;
+        background-color: rgba(125, 125, 125, 0.2);
+    }
+
+    .modal__window {
+        position: absolute;
+        z-index: 21;
     }
 </style>

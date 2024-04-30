@@ -21,15 +21,24 @@ import SongCard from '../audio/SongCard.vue'
         data() {
             return {
                 favouriteSongs: null,
+                userInfo: null
             }
         },
 
 
         mounted() {
-            this.getFavouriteSongs()
+            this.getFavouriteSongs();
+            this.getUserInfo();
         },
 
         methods: {
+            getUserInfo() {
+                api.get('http://music.local/api/auth/me')
+                    .then( res => {
+                        this.userInfo = res.data;
+                    });
+            },
+
             getFavouriteSongs() {
                 api.get('http://music.local/api/favourite/songs')
                 .then( res => {
