@@ -5,10 +5,10 @@
         </div>
 
         <div id="playlistForm" class="input-fields-container">
-            <input id="nameInput" placeholder="Название плейлиста" type="text" class="input-fields-container__playlist-name">
-            <label for="imgInput" class="input-fields-container__file-input-label">Выбрать обложку</label>
-            <input id="imgInput" type="file" accept="image/png" class="input-fields-container__file-input">
-            <img id="imagePreview" src="/src/icons/base_img.jpg" class="input-fields-container__input-image">
+            <input v-model="playlistName" placeholder="Название плейлиста" type="text" class="input-fields-container__playlist-name">
+            <label for="imageInput" class="input-fields-container__file-input-label">Выбрать обложку</label>
+            <input id="imageInput" type="file" accept="image/png" class="input-fields-container__file-input">
+            <img id="imagePreview" src="" class="input-fields-container__input-image">
         </div>
         
         <div @click.prevent="createPlaylist()" class="submit-button">
@@ -25,51 +25,63 @@ import api from '@/api';
 
         data() {
             return {
-
+                playlistName: '',
+                imageFile: null,
             }
         },
 
         mounted() {
-            this.imgInputPreview()
+            this.imageInputPreview()
         },
 
         methods: {
-            imgInputPreview() {
-                const fileInput = document.getElementById('imgInput');
+            imageInputPreview() {
+                const fileInput = document.getElementById('imageInput');
                 const imagePreview = document.getElementById('imagePreview');
-
-                fileInput.addEventListener('change', function(event) {
-                    const file = event.target.files[0];
-                    imagePreview.src = URL.createObjectURL(file)
+                fileInput.addEventListener('change', (event) => {
+                    this.imageFile = event.target.files[0];
+                    imagePreview.src = URL.createObjectURL(this.imageFile)
                 });
             },
 
             createPlaylist() {
-                const formData = this.makeFormData()
-
-                api.post('http://music.local/api/playlists/create-playlist', formData);
-
-                this.$parent.hideModal();
+                if (this.playlistName) {
+                    this.sendCreateAlbumRequest();
+                    this.hideModal();                
+                }
             },
 
-            makeFormData() {
+            sendCreateAlbumRequest() {
+                const jsonData = {
+                    name: this.playlistName
+                };
+                const url = 'http://music.local/api/playlists/create-playlist'; 
+                const responsePromise = api.post(url, jsonData);
+                if (this.imageFile) {
+                    responsePromise.then(this.sendSetPlaylistPhotoRequest())
+                }
+            },
+
+            sendSetPlaylistPhotoRequest() {
+                return (responseResult) => {
+                    const playlistId = responseResult.data.playlistId;
+                    const formData = this.makeImageFormData(); 
+                    const url = `http://music.local/api/playlists/${playlistId}/update-playlist-photo`; 
+                    api.post(url, formData);
+                }
+            },
+
+            makeImageFormData() {
                 const formData = new FormData();
-
-                const imageInput = document.getElementById('imgInput');
-                let image = imageInput.files[0];
-                if (image !== undefined) {
-                    formData.append('photo', image);
-                }
-
-                const nameInput = document.getElementById('nameInput');
-                if (!nameInput.value) {
-                    throw new Error('playlist name unset')
-                }
-
-                formData.append('name', nameInput.value);
-
+                formData.append('photo', this.imageFile);
                 return formData;
-            }
+            },
+
+            hideModal() {
+                // TODO: ADAPT TO UserPlaylists COMPONENT
+                // NOT READY
+                this.$parent.hideModal();
+            },
         }
     }
 </script>

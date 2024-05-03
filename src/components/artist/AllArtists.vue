@@ -30,7 +30,6 @@ import ArtistCard from '@/components/artist/ArtistCard.vue'
             getAllArtists() {
                 api.get('http://music.local/api/artists/all')
                 .then( res => {
-                    console.log(res.data)
                     this.artistsGroup = res.data
                 })
             }
@@ -44,7 +43,7 @@ import ArtistCard from '@/components/artist/ArtistCard.vue'
     flex-wrap: wrap;
     padding: 10px;
     justify-content: center;
-    width: 100%;
+    max-width: 100%;
     height: 100%;
 }
 

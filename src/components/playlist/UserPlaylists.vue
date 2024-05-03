@@ -162,5 +162,6 @@ import CreatePlaylist from '../playlist/CreatePlaylist.vue'
     .modal__window {
         position: absolute;
         z-index: 21;
+        max-height: 70vh;
     }
 </style>

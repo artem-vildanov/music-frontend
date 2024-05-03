@@ -55,11 +55,6 @@ const router = createRouter({
 
 
     // favourite
-    {
-      path: '/favourite',
-      name: 'favourite.collection',
-      component: () => import('../components/favourite/Collection.vue')
-    },
 
     {
       path: '/favourite/songs',

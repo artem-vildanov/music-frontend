@@ -1,39 +1,48 @@
 <template>
-    <div class="album-container" v-if="album">
-        <div class="dashboard">
+    <div class="album" v-if="album">
+        <div class="album-info">
             <div class="photo-container">
                 <img v-show="!imageError" class="album-photo select-none" :src="photoSrc" @error="imageError = true">
                 <img v-show="imageError" class="album-photo select-none" :src="altPhotoSrc">
             </div>
             <div class="info-container">
-                <div class="info-container__album-name">
+                <div class="album-name">
                     {{ album.name }}
                 </div>
-                <router-link :to="{ name: 'artist.single', params: { id: album.artistId }}" class="info-container__artist-name">
+                <router-link :to="{ name: 'artist.single', params: { id: album.artistId }}" class="artist-name">
                     {{ album.artistName }}
                 </router-link>
-                <div class="info-container__actions-container">
-                    <div class="actions-container__action">
+                <div class="album-actions-container">
+                    <div class="album-action">
                         <img v-show="album.isFavourite" class="icon select-none" src="../../icons/liked.svg">
                         <img v-show="!album.isFavourite" class="icon select-none" src="../../icons/not_liked.svg">
                     </div>
-                    <div @click.prevent="openModalWindow()" v-show="album.artistId === userInfo.artistId" class="actions-container__action">
+                    <div @click.prevent="openEditAlbumModal()" v-show="userInfo && album.artistId === userInfo.artistId" class="album-action">
                         <img class="icon select-none" src="/src/icons/edit.svg">
+                    </div>
+                    <div @click.prevent="openCreateSongModal()" v-show="userInfo && album.artistId === userInfo.artistId" class="album-action">
+                        <img class="icon select-none" src="/src/icons/create.svg">
                     </div>
                 </div>
             </div>
         </div>
-        <div class="album-content">
-            <div class="songs">       
-                <template v-for="song in albumSongs">
-                    <song-card :song="song"></song-card>
-                </template>
-            </div>
+   
+        <div class="album-songs">
+            <template v-for="song in albumSongs">
+                <song-card :song="song"></song-card>
+            </template>
         </div>
-        <div class="modal" id="modal">
-            <div class="modal__overlay" id="overlay"></div>
+
+        <div class="modal" id="editAlbumModal">
+            <div class="modal__overlay" id="editAlbumOverlay"></div>
             <div class="modal__window">
                 <edit-album :album="album"></edit-album>
+            </div>
+        </div>
+        <div class="modal" id="createSongModal">
+            <div class="modal__overlay" id="createSongOverlay"></div>
+            <div class="modal__window">
+                <create-song></create-song>
             </div>
         </div>
     </div>
@@ -42,13 +51,18 @@
 <script>
     import api from "../../api";
     import SongCard from "../audio/SongCard.vue";
-    import CreateAlbum from "../album/CreateAlbum.vue";
     import EditAlbum from "../album/EditAlbum.vue";
+    import CreateSong from "../audio/CreateSong.vue";
     import router from '@/router';
     
     export default {
         name: "Album",
-        components: {SongCard, EditAlbum},
+        components: {
+            SongCard, 
+            EditAlbum,
+            CreateSong
+        },
+
         data() {
             return {
                 imageError: false,
@@ -61,14 +75,6 @@
             }
         },
 
-        // computed: {
-        //     photoSrc() {
-        //         if (this.album) {
-        //             return `http://music.local:9005/photo/${this.album.photoPath}`
-        //         }
-        //     }
-        // },
-
         mounted() {
             this.getAlbum();
             this.getAlbumSongs();
@@ -77,7 +83,8 @@
 
         methods: {
             getAlbum() {
-                api.get(`http://music.local/api/albums/${this.albumId}`)
+                const url = `http://music.local/api/albums/${this.albumId}`;
+                api.get(url)
                     .then( res => {
                         this.album = res.data;
                         this.photoSrc = `http://music.local:9005/photo/${this.album.photoPath}`;
@@ -85,53 +92,64 @@
             },
 
             getAlbumSongs() {
-                api.get(`http://music.local/api/albums/${this.albumId}/songs/album-songs`)
+                const url = `http://music.local/api/albums/${this.albumId}/songs/album-songs`;
+                api.get(url)
                 .then( res => {
                     this.albumSongs = res.data
-                    console.log(this.albumSongs)
                 })
             },
 
             getUserInfo() {
-                api.get(`http://music.local/api/auth/me`)
+                const url = `http://music.local/api/auth/me`;
+                api.get(url)
                     .then( res => {
                         this.userInfo = res.data
                     })
             },
 
-            openModalWindow() {
-                const modal = document.getElementById("modal")
+            openCreateSongModal() {
+                const modalId = "createSongModal";
+                const overlayId = "createSongOverlay";
+                this.openModal(overlayId, modalId);
+            },
+
+            openEditAlbumModal() {
+                const modalId = "editAlbumModal";
+                const overlayId = "editAlbumOverlay";
+                this.openModal(overlayId, modalId);
+            },
+
+            openModal(overlayId, modalId) {
+                const modal = document.querySelector(`#${modalId}`);
                 
-                modal.style.visibility = "visible"
-                modal.style.opacity = "1"
+                modal.style.visibility = "visible";
+                modal.style.opacity = "1";
                 
                 setTimeout(() => {
-                    this.overlayClickListener()
-                }, 500)
+                    this.overlayClickListener(overlayId, modalId);
+                }, 500);
             },
 
-            overlayClickListener() {
-                const overlay = document.getElementById('overlay')
-                overlay.addEventListener('click', this.hideModal)
+            overlayClickListener(overlayId, modalId) {
+                const overlay = document.querySelector(`#${overlayId}`);
+                overlay.addEventListener('click', this.hideModal(overlayId, modalId));
             },
 
-            hideModal() {
-                const modal = document.getElementById("modal")
-                const overlay = document.getElementById('overlay')
-                modal.style.visibility = "hidden"
-                modal.style.opacity = "0"
-                overlay.removeEventListener('click', this.hideModal)
+            hideModal(overlayId, modalId) {
+                return () => {
+                    const modal = document.querySelector(`#${modalId}`);
+                    const overlay = document.querySelector(`#${overlayId}`);
+                    modal.style.visibility = "hidden";
+                    modal.style.opacity = "0";
+                    overlay.removeEventListener('click', this.hideModal(overlayId, modalId));
+                };
             },
-
-            updatePage() {
-                router.push({ name: 'album.single', params: {id: this.album.id}});
-            }
         }
     }
 </script>
 
 <style scoped>
-    .album-container {
+    .album {
         /* margin: 20px; */
         padding: 20px;
         display: flex;
@@ -141,7 +159,7 @@
         width: fit-content;
     }
 
-    .dashboard {
+    .album-info {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -155,23 +173,15 @@
     .album-photo {
         width: 200px;
         height: 200px;
+        border: 1px solid rgb(175, 175, 175);
         border-radius: 20px;
-        pointer-events: none; 
+        pointer-events: none;
     }
 
-    .album-content {
-        width: 400px;
-        /* border: 2px solid black; */
-
-        /* padding: 20px;
-        background-color: white;
-        border-radius: 20px; */
-    }
-
-    .songs {
+    .album-songs {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        /* justify-content: center; */
         padding: 15px 20px;
         background-color:rgba(125, 125, 125, 0.1);
         border-radius: 20px;
@@ -191,12 +201,12 @@
         align-items: center;
     }
 
-    .info-container__album-name {
+    .album-name {
         font-size: 20px;
         margin-top: 10px;
     }
 
-    .info-container__artist-name {
+    .artist-name {
         font-size: 15px;
         padding: 2.5px 7px;
         margin-bottom: 5px;
@@ -205,23 +215,23 @@
         transition: all 0.2s ease-out;
     }
 
-    .info-container__artist-name:hover {
+    .artist-name:hover {
         text-decoration: none;
         background-color: rgba(125, 125, 125, 0.4);
         color: black;
     }
 
-    .info-container__artist-name:active {
+    .artist-name:active {
         background-color: rgba(125, 125, 125, 1);
     }
 
-    .info-container__actions-container {
+    .album-actions-container {
         display: flex;
         flex-direction: row;
         gap: 10px;
     }
 
-    .actions-container__action {
+    .album-action {
         border-radius: 50%;
         display: flex;
         width: fit-content;
@@ -231,11 +241,11 @@
         transition: all 0.2s ease-out;
     }
 
-    .actions-container__action:hover {
+    .album-action:hover {
         background-color: rgb(128, 128, 128, 0.25);
     }
 
-    .actions-container__action:active {
+    .album-action:active {
         background-color: gray;
     }
 
@@ -274,5 +284,6 @@
     .modal__window {
         position: absolute;
         z-index: 21;
+        max-height: 70vh;
     }
 </style>

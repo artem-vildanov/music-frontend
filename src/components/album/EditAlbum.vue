@@ -4,12 +4,12 @@
             Изменить альбом
         </div>
 
-        <div id="editAlbumForm" class="input-fields-container">
+        <div class="input-fields-container">
 
             <div class="input-fields-container__genre-and-name">
                 <div>
                     <div>Выберите имя</div>
-                    <input id="nameInput" :value="album.name" type="text" class="input-fields-container__playlist-name">
+                    <input id="nameInput" v-model="albumName" type="text" class="input-fields-container__playlist-name">
                 </div>
                 <select-genre :preSelectedGenreId="album.genreId"></select-genre>
             </div>
@@ -41,7 +41,8 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
         data() {
             return {
                 photoSrc: `http://music.local:9005/photo/${this.album.photoPath}`,
-                genres: [],
+                albumImage: null,
+                albumName: this.album.name,
             }
         },
 
@@ -59,35 +60,41 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
                 const fileInput = document.getElementById('imgInput');
                 const imagePreview = document.getElementById('imagePreview');
 
-                fileInput.addEventListener('change', function(event) {
-                    const file = event.target.files[0];
-                    imagePreview.src = URL.createObjectURL(file)
+                fileInput.addEventListener('change', (event) => {
+                    this.albumImage = event.target.files[0];
+                    imagePreview.src = URL.createObjectURL(this.albumImage);
                 });
             },
 
             editAlbum() {
-                const formData = this.makeFormData();
-                
-                api.post(`http://music.local/api/albums/${this.album.id}/update-album`, formData)
-                    .then( res => {
-                        console.log(res);
-                    });
+                this.editAlbumNameAndGenre();
+                if (this.albumImage) {
+                    this.editAlbumImage();
+                }
 
-                this.$parent.hideModal();
+                this.hideModal();
             },
 
-            makeFormData() {
-                const albumName = document.getElementById('nameInput').value;
-                const selectedGenreId = this.getSelectedGenreId();
-                const image = this.getUploadedImage();
+            editAlbumNameAndGenre() {
+                const url = `http://music.local/api/albums/${this.album.id}/update-album-name-genre`;
+                const jsonData = {
+                    name: this.albumName,
+                    genreId: this.getSelectedGenreId()
+                };
+
+                api.post(url, jsonData);
+            },
+
+            editAlbumImage() {
+                const url = `http://music.local/api/albums/${this.album.id}/update-album-photo`;
+                const formData = this.makeImageFormData();
                 
+                api.post(url, formData);
+            },            
+
+            makeImageFormData() {
                 const formData = new FormData();
-                formData.append('name', albumName);
-                formData.append('genreId', selectedGenreId);
-                if (image) {
-                    formData.append('photo', image);
-                }
-                
+                formData.append('photo', this.albumImage);
                 return formData;
             },
 
@@ -101,19 +108,20 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
                     }
                 }
 
+                if (!selectedOption) {
+                    throw Error('genre is not selected');
+                }
+
                 return selectedOption;
             },
 
-            getUploadedImage() {
-                const imageInput = document.getElementById('imgInput');
-
-                const image = imageInput.files[0];
-                if (image !== undefined) {
-                    return image;
-                }  
-
-                return null;
-            }
+            hideModal() {
+                const modalId = "editAlbumModal";
+                const overlayId = "editAlbumOverlay";
+                
+                const hideModalCallback = this.$parent.hideModal(overlayId, modalId);
+                hideModalCallback();
+            },
         }
     }
 </script>

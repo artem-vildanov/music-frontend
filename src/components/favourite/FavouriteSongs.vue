@@ -43,7 +43,6 @@ import SongCard from '../audio/SongCard.vue'
                 api.get('http://music.local/api/favourite/songs')
                 .then( res => {
                     this.favouriteSongs = res.data
-                    console.log(this.favouriteSongs)
                 }) 
             },
         }

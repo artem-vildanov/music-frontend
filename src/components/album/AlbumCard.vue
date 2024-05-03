@@ -100,6 +100,7 @@ import api from '@/api'
         border-radius: 10px;
         overflow: hidden;
         pointer-events: none;
+        border: 0.5px solid rgb(175, 175, 175);
     }
 
     .album-photo-container__photo-overlay {

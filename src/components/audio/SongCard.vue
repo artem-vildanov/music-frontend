@@ -1,40 +1,38 @@
 <template>
-    
     <div class="song-card" :id="`song_${song.id}`">
 
         <div class="song-photo-container">
-            <div class="song-photo-container__photo-overlay">
-                <div class="photo-overlay__play-audio">
-                    <img class="centered-icon icon select-none" src="../../icons/play.svg">
+            <div class="song-photo-overlay">
+                <div class="play-audio-action">
+                    <img class="icon select-none" src="../../icons/play.svg">
                 </div>
             </div>
-            <img class="song-photo-container__photo select-none" v-show="!imageError" :src="photoSrc" @error="this.imageError = true">
-            <img class="song-photo-container__photo select-none" v-show="imageError" :src="altPhotoSrc">
+            <img class="song-photo select-none" :src="photoSrc">
         </div>
 
         <div class="song-info-container">
-            <div :title="song.name" class="song-info-container__name">
+            <div :title="song.name" class="song-name">
                 {{ song.name }}
             </div>
-            <router-link :to="{ name: 'artist.single', params: { id: song.artistId }}" class="song-info-container__artist-name">
+            <router-link :to="{ name: 'artist.single', params: { id: song.artistId }}" class="artist-name">
                 {{ song.artistName }}
             </router-link>
         </div>
 
         <div class="song-actions-container">
-            <div class="song-actions-container__action">
+            <div class="song-action">
                 <img @click.prevent="removeFromFavourites()" v-show="song.isFavourite" class="icon" src="../../icons/liked.svg">
                 <img @click.prevent="addToFavourites()" v-show="!song.isFavourite" class="icon" src="../../icons/not_liked.svg">
             </div>
-            <div tabindex="0" class="song-actions-container__action open-hidden-actions">
+            <div tabindex="0" class="song-action open-hidden-actions">
                 <img class="icon" src="/src/icons/more.svg">
 
                 <div class="hidden-actions-container">
-                    <div class="song-actions-container__action hidden-action">
-                        <img @click.prevent="openModalWindow(`song_${song.id}`)" class="centered-icon icon" src="../../icons/playlist.svg">
+                    <div class="song-action hidden-action">
+                        <img @click.prevent="openModalAddToPlaylist()" class="centered-icon icon" src="../../icons/playlist.svg">
                     </div>
-                    <div v-show="song.artistId === userInfo.artistId" class="song-actions-container__action hidden-action">
-                        <img class="centered-icon icon" src="../../icons/edit.svg">
+                    <div v-show="userInfo && song.artistId === userInfo.artistId" class="song-action hidden-action">
+                        <img @click.prevent="openModalEditSong()" class="centered-icon icon" src="../../icons/edit.svg">
                     </div>
                 </div>
 
@@ -42,12 +40,16 @@
 
         </div>
 
-        <!-- вынести в отдельный компонент SelectPlaylist -->
-
-        <div class="modal">
-            <div class="modal__overlay"></div>
+        <div class="modal" id="selectPlaylistModal">
+            <div class="modal__overlay" id="selectPlaylistModalOverlay"></div>
             <div class="modal__window">
                 <select-playlist :song="song"></select-playlist>
+            </div>
+        </div>
+        <div class="modal" id="editSongModal">
+            <div class="modal__overlay" id="editSongModalOverlay"></div>
+            <div class="modal__window">
+                <edit-song :song="song"></edit-song>
             </div>
         </div>
     </div>
@@ -57,12 +59,14 @@
 import PlaylistCard from "../playlist/PlaylistCard.vue";
 import SelectPlaylist from "../playlist/SelectPlaylist.vue"
 import api from "@/api"
+import EditSong from "./EditSong.vue";
     export default {
         name: "SongCard",
 
         components: {
             PlaylistCard,
             SelectPlaylist,
+            EditSong
         },
 
         props: [
@@ -80,19 +84,19 @@ import api from "@/api"
         },
 
         methods: {
+            openModalEditSong() {
+                const overlayId = "editSongModalOverlay";
+                const modalId = "editSongModal";
 
-            openModalWindow() {
+                this.openModal(overlayId, modalId);
+            },
+
+            openModalAddToPlaylist() {
+                const overlayId = "selectPlaylistModalOverlay";
+                const modalId = "selectPlaylistModal";
+
                 this.getUserPlaylists();
-
-                const songCard = document.getElementById(`song_${this.song.id}`);
-                const modal = songCard.querySelector('.modal')
-                
-                modal.style.visibility = "visible"
-                modal.style.opacity = "1"
-                
-                setTimeout(() => {
-                    this.overlayClickListener()
-                }, 500)
+                this.openModal(overlayId, modalId);
             },
 
             getUserPlaylists() {
@@ -102,20 +106,33 @@ import api from "@/api"
                 })
             },
 
-            overlayClickListener() {
+            openModal(overlayId, modalId) {
                 const songCard = document.getElementById(`song_${this.song.id}`);
-
-                const overlay = songCard.querySelector('.modal__overlay')
-                overlay.addEventListener('click', this.hideModal);
+                const modal = songCard.querySelector(`#${modalId}`);
+                
+                modal.style.visibility = "visible"
+                modal.style.opacity = "1"
+                
+                setTimeout(() => {
+                    this.overlayClickListener(overlayId, modalId);
+                }, 500)
             },
 
-            hideModal() {
+            overlayClickListener(overlayId, modalId) {
                 const songCard = document.getElementById(`song_${this.song.id}`);
-                const overlay = songCard.querySelector('.modal__overlay')
-                const modal = songCard.querySelector('.modal')
-                modal.style.visibility = "hidden"
-                modal.style.opacity = "0"
-                overlay.removeEventListener('click', this.hideModal)
+                const overlay = songCard.querySelector(`#${overlayId}`);
+                overlay.addEventListener('click', this.hideModal(overlayId, modalId));
+            },
+
+            hideModal(overlayId, modalId) {
+                return () => {
+                    const songCard = document.getElementById(`song_${this.song.id}`);
+                    const overlay = songCard.querySelector(`#${overlayId}`);
+                    const modal = songCard.querySelector(`#${modalId}`);
+                    modal.style.visibility = "hidden"
+                    modal.style.opacity = "0"
+                    overlay.removeEventListener('click', this.hideModal(overlayId, modalId))
+                }
             },
 
             addToFavourites() {
@@ -159,11 +176,11 @@ import api from "@/api"
         background-color: rgba(125, 125, 125, 0.2);
     }
 
-    .song-card:hover .song-photo-container__photo-overlay {
+    .song-card:hover .song-photo-overlay {
         background-color: rgba(255, 255, 255, 0.7);
     }
 
-    .song-card:hover .photo-overlay__play-audio {
+    .song-card:hover .play-audio-action {
         opacity: 1;
     }
 
@@ -178,27 +195,28 @@ import api from "@/api"
         align-items: center;
     }
 
-    .song-photo-container__photo {
+    .song-photo {
         width: 60px;
         height: 60px;
-        border-radius: 5px;
+        border-radius: 10px;
+        border: 0.5px solid rgb(175, 175, 175);
     }
 
-    .song-photo-container__photo-overlay {
+    .song-photo-overlay {
         position: absolute;
         width: 100%;
         height: 100%;
         z-index: 1;
         background-color: rgba(255, 255, 255, 0); 
         transition: 0.5s ease-out;
-        border-radius: 5px;
+        border-radius: 10px;
 
         display: flex;
         justify-content: center;
         align-items: center;
     }
 
-    .photo-overlay__play-audio {
+    .play-audio-action {
         padding: 5px;
         opacity: 0;
         transition: all 0.2s ease-out;
@@ -206,19 +224,13 @@ import api from "@/api"
         border-radius: 50%;
     }
 
-    .photo-overlay__play-audio:hover {
+    .play-audio-action:hover {
         background-color: rgba(125, 125, 125, 0.3);
     }
 
-    .photo-overlay__play-audio:active {
+    .play-audio-action:active {
         background-color: rgba(125, 125, 125, 1);
     }
-
-    /*.centered-icon { !* иконка проигрывания музыки не была центирована; делаем ее центрированной *!*/
-    /*    margin-left: 5px;*/
-    /*    margin-top: 2.5px;*/
-    /*    margin-bottom: 2.5px;*/
-    /*}*/
 
     .song-info-container {
         display: flex;
@@ -227,7 +239,7 @@ import api from "@/api"
         margin-left: 10px;
     }
 
-    .song-info-container__name {
+    .song-name {
         font-size: 15px;
         margin-left: 5px; /* компнесировать отступ от паддинга artist-name, чтобы выровнять */
         
@@ -237,7 +249,7 @@ import api from "@/api"
         text-overflow: ellipsis;
     }
 
-    .song-info-container__artist-name {
+    .artist-name {
         font-size: 12px;
         padding: 2.5px 5px;
         width: fit-content;
@@ -246,13 +258,13 @@ import api from "@/api"
         transition: all 0.2s ease-out;
     }
 
-    .song-info-container__artist-name:hover {
+    .artist-name:hover {
         text-decoration: none;
         background-color: rgba(125, 125, 125, 0.5);
         color: black;
     }
 
-    .song-info-container__artist-name:active {
+    .artist-name:active {
         background-color: rgba(125, 125, 125, 1);
     }
 
@@ -265,7 +277,7 @@ import api from "@/api"
         background-color: rgba(125, 125, 125, 0);
     }
 
-    .song-actions-container__action {
+    .song-action {
         margin: 0px 2px;
         border-radius: 50%;
         transition: all 0.2s ease-out;
@@ -273,20 +285,13 @@ import api from "@/api"
         cursor: pointer;
     }
 
-    .song-actions-container__action:hover {
+    .song-action:hover {
         background-color: rgba(125, 125, 125, 0.3);
     }
 
-    .song-actions-container__action:active {
+    .song-action:active {
         background-color: rgba(125, 125, 125, 1);
     }
-
-    /*.hidden-action {*/
-    /*    display: none;*/
-    /*    visibility: hidden;*/
-    /*    opacity: 0;*/
-    /*    transition: opacity 0.2s, visibility 0.2s;*/
-    /*}*/
 
     .hidden-actions-container {
         position: absolute;
@@ -362,7 +367,7 @@ import api from "@/api"
     .modal__window {
         position: absolute;
         z-index: 21;
-        height: 70vh;
+        max-height: 70vh;
         overflow-y: auto;
     }
 

@@ -14,8 +14,11 @@
                         <img v-show="artist.isFavourite" class="icon select-none" src="../../icons/liked.svg">
                         <img v-show="!artist.isFavourite" class="icon select-none" src="../../icons/not_liked.svg">
                     </div>
-                    <div v-show="artist.id === userInfo.artistId" class="actions-container__action">
+                    <div @click.prevent="openModalEditArtist()" v-show="userInfo && artist.id === userInfo.artistId" class="actions-container__action">
                         <img class="icon select-none" src="/src/icons/edit.svg">
+                    </div>
+                    <div @click.prevent="openModalCreateAlbum()" v-show="userInfo && artist.id === userInfo.artistId" class="actions-container__action">
+                        <img class="icon select-none" src="/src/icons/create.svg">
                     </div>
                 </div>
             </div>
@@ -27,15 +30,31 @@
                 </template>
             </div>
         </div>
+        <div class="modal" id="editArtistModal">
+            <div class="modal__overlay" id="editArtistOverlay"></div>
+            <div class="modal__window">
+                <!-- <edit-artist :artist="artist"></edit-artist> -->
+            </div>
+        </div>
+        <div class="modal" id="createAlbumModal">
+            <div class="modal__overlay" id="createAlbumOverlay"></div>
+            <div class="modal__window">
+                <create-album></create-album>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import api from "../../api";
 import AlbumCard from "../album/AlbumCard.vue";
+import CreateAlbum from "../album/CreateAlbum.vue";
     export default {
         name: "Artist",
-        components: {AlbumCard},
+        components: {
+            AlbumCard,
+            CreateAlbum,
+        },
         data() {
             return {
                 artistId: this.$route.params.id,
@@ -49,19 +68,20 @@ import AlbumCard from "../album/AlbumCard.vue";
         },
 
         mounted() {
-            this.getArtist()
-                .then(() => {
-                    this.photoSrc = `http://music.local:9005/photo/${this.artist.photoPath}`;
-                });
+            this.getArtist();
             this.getArtistAlbums();
             this.getUserInfo();
         },
 
         methods: {
+
+            /** GET REQUESTS */
+
             getArtist() {
-                return api.get(`http://music.local/api/artists/${this.artistId}`)
+                api.get(`http://music.local/api/artists/${this.artistId}`)
                     .then( res => {
-                        this.artist = res.data
+                        this.artist = res.data;
+                        this.photoSrc = `http://music.local:9005/photo/${this.artist.photoPath}`;
                     })
             },
 
@@ -77,6 +97,48 @@ import AlbumCard from "../album/AlbumCard.vue";
                     .then( res => {
                         this.userInfo = res.data
                     })
+            },
+
+            /** MODAL */
+
+            openModalEditArtist() {
+                const overlayId = "editArtistOverlay";
+                const modalId = "editArtistModal";
+
+                this.openModal(overlayId, modalId);
+            },
+
+            openModalCreateAlbum() {
+                const overlayId = "createAlbumOverlay";
+                const modalId = "createAlbumModal";
+
+                this.openModal(overlayId, modalId);
+            },
+
+            openModal(overlayId, modalId) {
+                const modal = document.querySelector(`#${modalId}`);
+                
+                modal.style.visibility = "visible"
+                modal.style.opacity = "1"
+                
+                setTimeout(() => {
+                    this.overlayClickListener(overlayId, modalId);
+                }, 500)
+            },
+
+            overlayClickListener(overlayId, modalId) {
+                const overlay = document.querySelector(`#${overlayId}`);
+                overlay.addEventListener('click', this.hideModal(overlayId, modalId));
+            },
+
+            hideModal(overlayId, modalId) {
+                return () => {
+                    const overlay = document.querySelector(`#${overlayId}`);
+                    const modal = document.querySelector(`#${modalId}`);
+                    modal.style.visibility = "hidden"
+                    modal.style.opacity = "0"
+                    overlay.removeEventListener('click', this.hideModal(overlayId, modalId))
+                }
             },
         }
 
@@ -109,6 +171,7 @@ import AlbumCard from "../album/AlbumCard.vue";
         height: 200px;
         border-radius: 100%;
         pointer-events: none; 
+        border: 1px solid rgb(175, 175, 175);
     }
 
     .artist-content {
@@ -174,6 +237,45 @@ import AlbumCard from "../album/AlbumCard.vue";
     .icon {
         width: 30px;
         height: 30px;
+    }
+
+     /** modal window */
+
+     .modal {
+        position: fixed;
+
+        top:0;
+        left:0;
+
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+
+        display: flex;
+
+        visibility: hidden;
+        opacity: 0;
+
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(15px);
+        
+
+        transition: opacity 0.5s, visibility 0.5s, backdrop-filter 0.2s; 
+    }
+
+    .modal__overlay {
+        position: absolute;
+        width: inherit;
+        height: inherit;
+        background-color: rgba(125, 125, 125, 0.2);
+    }
+
+    .modal__window {
+        position: absolute;
+        z-index: 21;
+        max-height: 70vh;
+        overflow-y: auto;
     }
 
 </style>
