@@ -2,13 +2,13 @@
     <div class="confirmation-box">
         <div class="title">
             Вы уверены, что хотите<br>
-            удалить этот трек?
+            удалить этот плейлист?
         </div>
         <div class="buttons-container">
-            <div @click.prevent="deleteSong()" class="submit-button danger">
+            <div @click.prevent="deletePlaylist()" class="submit-button danger">
                 Удалить
             </div>
-            <div @click.prevent="closeDeleteConfirmationModal()" class="submit-button">
+            <div @click.prevent="closeDeletePlaylistModal()" class="submit-button">
                 Отмена
             </div>
         </div>
@@ -17,35 +17,31 @@
 <script>
 import api from "@/api";
 export default {
-    name: "DeleteSong",
+    name: "DeletePlaylist",
 
     props: [
-        "song"
+        "playlist"
     ],
 
     methods: {
 
-        deleteSong() {
-            const url = `http://music.local/api/albums/${this.song.albumId}/songs/${this.song.id}/delete-song`;
-            api.delete(url).then(this.hideSongCard);
-            this.$parent.hideEditSongModal();
+        deletePlaylist() {
+            const url = `http://music.local/api/playlists/${this.playlist.id}/delete-playlist`;
+            api.delete(url).then(this.redirectToAllPlaylists);
         },
 
-        closeDeleteConfirmationModal() {
-            const overlayId = "editSongModalOverlay";
-            const modalId = "editSongModal";
+        closeDeletePlaylistModal() {
+            const overlayId = "deletePlaylistModalOverlay";
+            const modalId = "deletePlaylistModal";
 
-            const hideModalCallback = this.$parent.hideDeleteConfirmationModal(overlayId, modalId);
+            const hideModalCallback = this.$parent.hideDeletePlaylistModal(overlayId, modalId);
             hideModalCallback();
         },
 
-        hideSongCard() {
-            const songCard = document.getElementById(`song_${this.song.id}`)
-            songCard.style.opacity = '0'
-            setTimeout(() => {
-                songCard.remove()
-            }, 500)
-        },
+        redirectToAllPlaylists() {
+            const playlistsRoute = { name: 'playlist.all'};
+            this.$router.push(playlistsRoute);
+        }
     }
 }
 </script>
@@ -62,7 +58,7 @@ export default {
     .title {
         font-size: 20px;
         width: fit-content;
-        padding: 2.5px 10px;
+        padding: 20px;
         background-color: rgba(125, 125, 125, 0.2);
         border-radius: 10px;
         text-align: center;

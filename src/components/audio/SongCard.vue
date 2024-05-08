@@ -29,7 +29,10 @@
 
                 <div class="hidden-actions-container">
                     <div class="song-action hidden-action">
-                        <img @click.prevent="openModalAddToPlaylist()" class="centered-icon icon" src="../../icons/playlist.svg">
+                        <img @click.prevent="openModalAddToPlaylist()" class="centered-icon icon" src="../../icons/add_to_playlist.svg">
+                    </div>
+                    <div class="song-action hidden-action">
+                        <img @click.prevent="openModalDeleteFromPlaylists()" class="centered-icon icon" src="../../icons/delete_from_playlist.svg">
                     </div>
                     <div v-show="userInfo && song.artistId === userInfo.artistId" class="song-action hidden-action">
                         <img @click.prevent="openModalEditSong()" class="centered-icon icon" src="../../icons/edit.svg">
@@ -40,10 +43,16 @@
 
         </div>
 
-        <div class="modal" id="selectPlaylistModal">
-            <div class="modal__overlay" id="selectPlaylistModalOverlay"></div>
+        <div class="modal" id="addToPlaylistModal">
+            <div class="modal__overlay" id="addToPlaylistModalOverlay"></div>
             <div class="modal__window">
-                <select-playlist :song="song"></select-playlist>
+                <add-to-playlist ref="addToPlaylistRef" :song="song"></add-to-playlist>
+            </div>
+        </div>
+        <div class="modal" id="deleteFromPlaylistModal">
+            <div class="modal__overlay" id="deleteFromPlaylistModalOverlay"></div>
+            <div class="modal__window">
+                <delete-from-playlist ref="deleteFromPlaylistRef" :song="song"></delete-from-playlist>
             </div>
         </div>
         <div class="modal" id="editSongModal">
@@ -57,7 +66,8 @@
 
 <script>
 import PlaylistCard from "../playlist/PlaylistCard.vue";
-import SelectPlaylist from "../playlist/SelectPlaylist.vue"
+import AddToPlaylist from "../playlist/AddToPlaylist.vue";
+import DeleteFromPlaylist from "../playlist/DeleteFromPlaylist.vue";
 import api from "@/api"
 import EditSong from "./EditSong.vue";
     export default {
@@ -65,21 +75,21 @@ import EditSong from "./EditSong.vue";
 
         components: {
             PlaylistCard,
-            SelectPlaylist,
+            AddToPlaylist,
+            DeleteFromPlaylist,
             EditSong
         },
 
         props: [
-            'song'
+            'songProps'
         ],
 
         data() {
             return {
+                song: this.songProps,
                 imageError: null,
-                photoSrc: `http://music.local:9005/photo/${this.song.photoPath}`,
-                altPhotoSrc: "/src/icons/base_img.jpg",
+                photoSrc: `http://music.local:9005/photo/${this.songProps.photoPath}`,
                 userInfo: this.$parent.userInfo,
-                userPlaylists: null
             }
         },
 
@@ -92,18 +102,19 @@ import EditSong from "./EditSong.vue";
             },
 
             openModalAddToPlaylist() {
-                const overlayId = "selectPlaylistModalOverlay";
-                const modalId = "selectPlaylistModal";
+                const overlayId = "addToPlaylistModalOverlay";
+                const modalId = "addToPlaylistModal";
 
-                this.getUserPlaylists();
+                this.$refs.addToPlaylistRef.getUserPlaylists();
                 this.openModal(overlayId, modalId);
             },
 
-            getUserPlaylists() {
-                api.get('http://music.local/api/playlists')
-                .then( res => {
-                    this.userPlaylists = res.data
-                })
+            openModalDeleteFromPlaylists() {
+                const overlayId = "deleteFromPlaylistModalOverlay";
+                const modalId = "deleteFromPlaylistModal";
+
+                this.$refs.deleteFromPlaylistRef.getUserPlaylists();
+                this.openModal(overlayId, modalId);
             },
 
             openModal(overlayId, modalId) {
@@ -369,6 +380,7 @@ import EditSong from "./EditSong.vue";
         z-index: 21;
         max-height: 70vh;
         overflow-y: auto;
+        
     }
 
     

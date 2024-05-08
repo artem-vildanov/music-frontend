@@ -2,14 +2,13 @@
     <div class="album-card" :id="`album_${album.id}`">
 
         <div class="album-photo-container">
-            <div class="album-photo-container__photo-overlay select-none">
-                <div class="photo-overlay__is-favourite">
+            <div class="photo-overlay select-none">
+                <div class="is-favourite">
                     <img @click.prevent="removeFromFavourites()" v-show="album.isFavourite" class="icon" src="../../icons/liked.svg">
                     <img @click.prevent="addToFavourites()" v-show="!album.isFavourite" class="icon" src="../../icons/not_liked.svg">
                 </div>
             </div>
-            <img class="album-photo-container__photo select-none" v-show="!imageError" :src="photoSrc" @error="this.imageError = true">
-            <img class="album-photo-container__photo select-none" v-show="imageError" :src="altPhotoSrc">
+            <img class="album-photo select-none" :src="photoSrc">
         </div>
 
         <div class="album-info">
@@ -32,7 +31,6 @@ import api from '@/api'
             return {
                 imageError: null,
                 photoSrc: `http://music.local:9005/photo/${this.album.photoPath}`,
-                altPhotoSrc: "/src/icons/base_img.jpg"
             }
         },
 
@@ -94,7 +92,7 @@ import api from '@/api'
         align-items: center;
     }
     
-    .album-photo-container__photo {
+    .album-photo {
         width: 150px;
         height: 150px;
         border-radius: 10px;
@@ -103,7 +101,7 @@ import api from '@/api'
         border: 0.5px solid rgb(175, 175, 175);
     }
 
-    .album-photo-container__photo-overlay {
+    .photo-overlay {
         position: absolute;
         width: 100%;
         height: 100%;
@@ -117,7 +115,7 @@ import api from '@/api'
         align-items: center;
     }
 
-    .album-card:hover .album-photo-container__photo-overlay {
+    .album-card:hover .photo-overlay {
         background-color: rgba(255, 255, 255, 0.7); 
     } 
 
@@ -180,7 +178,7 @@ import api from '@/api'
         background-color: rgba(124, 124, 124, 0.5);
     }
 
-    .photo-overlay__is-favourite {
+    .is-favourite {
         position: absolute;
         z-index: 2;
         opacity: 0;
@@ -193,15 +191,15 @@ import api from '@/api'
         transition: all 0.2s ease-out;
     }
 
-    .album-card:hover .photo-overlay__is-favourite {
+    .album-card:hover .is-favourite {
         opacity: 1;
     } 
 
-    .photo-overlay__is-favourite:hover {
+    .is-favourite:hover {
         background-color: rgb(128, 128, 128, 0.25);
     }
 
-    .photo-overlay__is-favourite:active {
+    .is-favourite:active {
         background-color: gray;
     }
 

@@ -2,8 +2,7 @@
     <div class="artist-container" v-if="artist">
         <div class="dashboard"><!-- display flex flex-dir: row-->
             <div class="photo-container"><!-- photo styles -->
-                <img v-show="!imageError" class="artist-photo select-none" :src="photoSrc" @error="imageError = true">
-                <img v-show="imageError" class="artist-photo select-none" :src="altPhotoSrc">
+                <img class="artist-photo select-none" :src="photoSrc">
             </div>
             <div class="info-container"><!-- dis: flex; flex-dir: column; -->
                 <div class="info-container__artist-name">
@@ -11,8 +10,8 @@
                 </div>
                 <div class="info-container__actions-container">
                     <div class="actions-container__action">
-                        <img v-show="artist.isFavourite" class="icon select-none" src="../../icons/liked.svg">
-                        <img v-show="!artist.isFavourite" class="icon select-none" src="../../icons/not_liked.svg">
+                        <img @click.prevent="removeFromFavourites()" v-show="artist.isFavourite" class="icon select-none" src="../../icons/liked.svg">
+                        <img @click.prevent="addToFavourites()" v-show="!artist.isFavourite" class="icon select-none" src="../../icons/not_liked.svg">
                     </div>
                     <div @click.prevent="openModalEditArtist()" v-show="userInfo && artist.id === userInfo.artistId" class="actions-container__action">
                         <img class="icon select-none" src="/src/icons/edit.svg">
@@ -31,15 +30,15 @@
             </div>
         </div>
         <div class="modal" id="editArtistModal">
-            <div class="modal__overlay" id="editArtistOverlay"></div>
-            <div class="modal__window">
-                <!-- <edit-artist :artist="artist"></edit-artist> -->
+            <div class="modal-overlay" id="editArtistModalOverlay"></div>
+            <div class="modal-window">
+                <edit-artist ref="editArtistRef" :artist="artist"></edit-artist>
             </div>
         </div>
         <div class="modal" id="createAlbumModal">
-            <div class="modal__overlay" id="createAlbumOverlay"></div>
-            <div class="modal__window">
-                <create-album></create-album>
+            <div class="modal-overlay" id="createAlbumOverlay"></div>
+            <div class="modal-window">
+                <create-album ref="createAlbumRef"></create-album>
             </div>
         </div>
     </div>
@@ -49,20 +48,20 @@
 import api from "../../api";
 import AlbumCard from "../album/AlbumCard.vue";
 import CreateAlbum from "../album/CreateAlbum.vue";
+import EditArtist from "../artist/EditArtist.vue";
     export default {
         name: "Artist",
         components: {
             AlbumCard,
             CreateAlbum,
+            EditArtist
         },
         data() {
             return {
                 artistId: this.$route.params.id,
                 artist: null,
                 artistAlbums: null,
-                imageError: false,
                 photoSrc: null,
-                altPhotoSrc: "/src/icons/base_img.jpg",
                 userInfo: null
             }
         },
@@ -102,13 +101,17 @@ import CreateAlbum from "../album/CreateAlbum.vue";
             /** MODAL */
 
             openModalEditArtist() {
-                const overlayId = "editArtistOverlay";
+                this.$refs.editArtistRef.onMounted();
+
+                const overlayId = "editArtistModalOverlay";
                 const modalId = "editArtistModal";
 
                 this.openModal(overlayId, modalId);
             },
 
             openModalCreateAlbum() {
+                this.$refs.createAlbumRef.onMounted();
+
                 const overlayId = "createAlbumOverlay";
                 const modalId = "createAlbumModal";
 
@@ -139,6 +142,16 @@ import CreateAlbum from "../album/CreateAlbum.vue";
                     modal.style.opacity = "0"
                     overlay.removeEventListener('click', this.hideModal(overlayId, modalId))
                 }
+            },
+
+            addToFavourites() {
+                api.put(`http://music.local/api/favourite/artists/add-to-favourites/${this.artist.id}`)
+                this.artist.isFavourite = true
+            },
+
+            removeFromFavourites() {
+                api.put(`http://music.local/api/favourite/artists/delete-from-favourites/${this.artist.id}`)
+                this.artist.isFavourite = false
             },
         }
 
@@ -241,7 +254,7 @@ import CreateAlbum from "../album/CreateAlbum.vue";
 
      /** modal window */
 
-     .modal {
+    .modal {
         position: fixed;
 
         top:0;
@@ -264,14 +277,14 @@ import CreateAlbum from "../album/CreateAlbum.vue";
         transition: opacity 0.5s, visibility 0.5s, backdrop-filter 0.2s; 
     }
 
-    .modal__overlay {
+    .modal-overlay {
         position: absolute;
         width: inherit;
         height: inherit;
         background-color: rgba(125, 125, 125, 0.2);
     }
 
-    .modal__window {
+    .modal-window {
         position: absolute;
         z-index: 21;
         max-height: 70vh;

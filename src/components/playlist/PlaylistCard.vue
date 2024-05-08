@@ -2,15 +2,12 @@
     <div class="playlist-card" :id="`playlist_${playlist.id}`">
 
         <div class="playlist-photo-container">
-            <div class="playlist-photo-container__photo-overlay select-none">
-                
-            </div>
-            <img class="playlist-photo-container__photo select-none" v-show="!imageError" :src="photoSrc" @error="this.imageError = true"> 
-            <img class="playlist-photo-container__photo select-none" v-show="imageError" :src="altPhotoSrc">
+            <div class="photo-overlay select-none"></div>
+            <img class="playlist-photo select-none" :src="photoSrc"> 
         </div>
 
         <div class="playlist-info">
-            <router-link :title="playlist.name" :to="{ name: 'playlist.single', params: { id: playlist.id }}" class="playlist-info__name">
+            <router-link :title="playlist.name" :to="{ name: 'playlist.single', params: { id: playlist.id }}" class="playlist-name">
                 {{ playlist.name }}
             </router-link>
         </div>
@@ -68,7 +65,7 @@ import api from '@/api'
         align-items: center;
     }
     
-    .playlist-photo-container__photo {
+    .playlist-photo {
         width: 150px;
         height: 150px;
         border-radius: 10px;
@@ -76,7 +73,7 @@ import api from '@/api'
         pointer-events: none;
     }
 
-    .playlist-photo-container__photo-overlay {
+    .photo-overlay {
         position: absolute;
         width: 100%;
         height: 100%;
@@ -90,7 +87,7 @@ import api from '@/api'
         align-items: center;
     }
 
-    .playlist-card:hover .playlist-photo-container__photo-overlay {
+    .playlist-card:hover .photo-overlay {
         background-color: rgba(255, 255, 255, 0.7); 
     } 
 
@@ -102,7 +99,7 @@ import api from '@/api'
         margin-top: 15px;   
     }
 
-    .playlist-info__name {
+    .playlist-name {
         max-width: 150px;
 
         overflow: hidden;
@@ -118,13 +115,13 @@ import api from '@/api'
         transition: all 0.2s ease-out; 
     }
 
-    .playlist-info__name:hover {
+    .playlist-name:hover {
         background-color: rgb(124, 124, 124, 0.2); 
         color: black;      
         text-decoration: none;  
     }
 
-    .playlist-info__name:active {
+    .playlist-name:active {
         background-color: rgb(124, 124, 124, 0.5);
         /* outline: 4px solid rgb(124, 124, 124, 0.25); */
     }

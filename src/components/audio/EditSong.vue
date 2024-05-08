@@ -24,8 +24,8 @@
         </div>
     </div>
 
-    <div class="modal" id="deleteConfirmationModal">
-        <div class="modal-overlay" id="deleteConfirmationOverlay"></div>
+    <div class="modal" id="deleteSongModal">
+        <div class="modal-overlay" id="deleteSongModalOverlay"></div>
         <div class="modal-window">
             <delete-song :song="song"></delete-song>
         </div>
@@ -69,35 +69,63 @@ export default {
             });
         },
 
+        /**
+         *  EDIT SONG 
+         */
+
         editSong() {
-            if (this.audioFile || this.newSongName) {
-                if (this.audioFile) {
-                    this.editSongAudio();
-                }
-
-                if (this.newSongName) {
-                    this.editSongName();
-                }
-
-                this.hideEditSongModal();
+            if (this.newSongName || this.audioFile) {
+                this.editSongAudio()
+                    .then(this.editSongName)
+                    .then(this.displayUpdatedSong)
+                    .then(this.hideEditSongModal);
             }
         },
 
-        editSongName() {
-            const url = `http://music.local/api/albums/${this.song.albumId}/songs/${this.song.id}/update-song-name`;
-            api.post(url, { name: this.newSongName }).then(this.refreshPage);
+        editSongAudio() {
+            return new Promise(resolve => {
+                if (this.audioFile) {
+                    const formData = this.makeAudioFormData();
+                    const url = `http://music.local/api/albums/${this.song.albumId}/songs/${this.song.id}/update-song-audio`;
+                    api.post(url, formData).then(resolve); 
+                } else {
+                    resolve();
+                }
+            });
         },
 
-        editSongAudio() {
-            const formData = this.makeAudioFormData();
-            const url = `http://music.local/api/albums/${this.song.albumId}/songs/${this.song.id}/update-song-audio`;
-            api.post(url, formData).then(this.refreshPage);
+        editSongName() {
+            return new Promise(resolve => {
+                if (this.newSongName) {
+                    const url = `http://music.local/api/albums/${this.song.albumId}/songs/${this.song.id}/update-song-name`;
+                    const jsonData = { name: this.newSongName }; 
+                    api.post(url, jsonData).then(resolve);                       
+                } else {
+                    resolve();
+                }
+            })
         },
 
         makeAudioFormData() {
             const formData = new FormData();
             formData.append("audio", this.audioFile);
             return formData;
+        },
+
+        displayUpdatedSong() {
+            return new Promise(resolve => {
+                this.getUpdatedSong()
+                    .then(response => {
+                        const updatedSong = response.data;
+                        this.$parent.$data.song = updatedSong;
+                        resolve();
+                    });
+            });
+        },
+
+        getUpdatedSong() {
+            const url = `http://music.local/api/albums/${this.song.albumId}/songs/${this.song.id}`;
+            return api.get(url);
         },
 
         hideEditSongModal() {
@@ -107,21 +135,19 @@ export default {
             hideModalCallback();
         },
 
-        refreshPage() {
-            this.$router.go(0);
-        },
+        /**
+         *  DELETE SONG MODAL
+         */
 
         deleteSongModal() {
-            const overlayId = "deleteConfirmationOverlay";
-            const modalId = "deleteConfirmationModal";
+            const overlayId = "deleteSongModalOverlay";
+            const modalId = "deleteSongModal";
             this.openDeleteConfirmationModal(overlayId, modalId);
         },
 
         openDeleteConfirmationModal(overlayId, modalId) {
             const songCard = document.getElementById(`song_${this.song.id}`);
             const modal = songCard.querySelector(`#${modalId}`);
-
-            console.log(modal);
             
             modal.style.visibility = "visible"
             modal.style.opacity = "1"

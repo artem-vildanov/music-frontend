@@ -2,13 +2,13 @@
     <div class="confirmation-box">
         <div class="title">
             Вы уверены, что хотите<br>
-            удалить этот трек?
+            удалить аккаунт артиста?
         </div>
         <div class="buttons-container">
-            <div @click.prevent="deleteSong()" class="submit-button danger">
+            <div @click.prevent="deleteArtist()" class="submit-button danger">
                 Удалить
             </div>
-            <div @click.prevent="closeDeleteConfirmationModal()" class="submit-button">
+            <div @click.prevent="closeDeleteArtistModal()" class="submit-button">
                 Отмена
             </div>
         </div>
@@ -17,34 +17,38 @@
 <script>
 import api from "@/api";
 export default {
-    name: "DeleteSong",
+    name: "DeleteArtist",
 
     props: [
-        "song"
+        "artist"
     ],
 
     methods: {
 
-        deleteSong() {
-            const url = `http://music.local/api/albums/${this.song.albumId}/songs/${this.song.id}/delete-song`;
-            api.delete(url).then(this.hideSongCard);
-            this.$parent.hideEditSongModal();
+        deleteArtist() {
+            const url = `http://music.local/api/artists/${this.artist.id}/delete-artist`;
+            api.delete(url).then( res => {
+                this.changeUserAccessToken(res.data.access_token);
+                this.redirectToAccount();
+            });
         },
 
-        closeDeleteConfirmationModal() {
-            const overlayId = "editSongModalOverlay";
-            const modalId = "editSongModal";
+        closeDeleteArtistModal() {
+            const overlayId = "deleteArtistModalOverlay";
+            const modalId = "deleteArtistModal";
 
-            const hideModalCallback = this.$parent.hideDeleteConfirmationModal(overlayId, modalId);
+            const hideModalCallback = this.$parent.hideDeleteArtistModal(overlayId, modalId);
             hideModalCallback();
         },
 
-        hideSongCard() {
-            const songCard = document.getElementById(`song_${this.song.id}`)
-            songCard.style.opacity = '0'
-            setTimeout(() => {
-                songCard.remove()
-            }, 500)
+        redirectToAccount() {
+            const accountRoute = { name: 'account.user'};
+            this.$router.push(accountRoute);
+        },
+
+        changeUserAccessToken(token) {
+            localStorage.removeItem('access_token');
+            localStorage.setItem('access_token', token);
         },
     }
 }

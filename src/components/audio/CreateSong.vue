@@ -14,9 +14,12 @@
                 <audio controls id="audioPlayer"></audio>
             </div>
         </div>
-        <div @click.prevent="createSong()" class="submit-button">
-            Создать
-        </div>
+        <input
+        type="submit"
+        value="Создать"
+        :disabled="buttonClickabilityChecker()" 
+        @click.prevent="createSong()" 
+        class="submit-button"/>
     </div>
 </template>
 
@@ -39,6 +42,10 @@ export default {
     },
 
     methods: {
+        buttonClickabilityChecker() {
+            return this.songName !== '' && this.audioFile !== null;
+        },
+
         audioInputPreview() {
             const audioPlayer = document.querySelector('#audioPlayer');
             const audioInput = document.querySelector('#audioInput');
@@ -48,12 +55,10 @@ export default {
             });
         },
 
-        createSong() {
-            if (this.songName && this.audioFile) {
-                const formData = this.makeFormData();
-                this.sendPostRequest(formData);
-                this.hideModal();
-            }
+        async createSong() {            
+            const createdSongId = await this.sendCreateSongRequest();
+            await this.displayCreatedSong(createdSongId);
+            this.hideModal();
         },
 
         makeFormData() {
@@ -63,20 +68,30 @@ export default {
             return formData;
         },
 
-        sendPostRequest(formData) {
+        /**
+         * @returns {Promise} created song id
+         */
+        async sendCreateSongRequest() {
+            const formData = this.makeFormData();
             const url = `http://music.local/api/albums/${this.albumId}/songs/create-song`;
-            api.post(url, formData).then(this.refreshPage);
+            const response = await api.post(url, formData);
+            return response.data;
+        },
+
+        /**
+         * @param {number} songId 
+         */
+        async displayCreatedSong(songId) {
+            const url = `http://music.local/api/albums/${this.albumId}/songs/${songId}`;
+            const createdSong = await api.get(url);
+            this.$parent.$data.albumSongs.push(createdSong);
         },
 
         hideModal() {
-            const overlayId = "createSongOverlay";
+            const overlayId = "createSongModalOverlay";
             const modalId = "createSongModal";
             const hideModalCallback = this.$parent.hideModal(overlayId, modalId);
             hideModalCallback();
-        },
-
-        refreshPage() {
-            this.$router.go(0);
         },
     }
 }

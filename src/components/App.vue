@@ -11,7 +11,7 @@
                 Профиль
             </router-link>
             <router-link class="navbar__link" v-show="accessToken" :to="{ name: 'artist.all' }">
-                All artists 
+                Все артисты
             </router-link>
             <div class="navbar__dropdown-link" v-show="accessToken">
                 Коллекция
@@ -22,10 +22,6 @@
                     <router-link class="dropdown-list__item" :to="{ name:'favourite.artists' }">Любимые артисты</router-link>
                 </div>
             </div>
-
-            <a class="navbar__link navbar__logout" @click.prevent="logout" href="#" v-show="accessToken">
-                Выйти
-            </a>
         </nav>
 
 
@@ -63,14 +59,6 @@
             getAccessToken() {
                 this.accessToken = localStorage.getItem('access_token')
             },
-
-            logout() {
-                api.post('http://music.local/api/auth/logout', {})
-                    .then( res => {
-                        localStorage.removeItem('access_token')
-                        this.$router.push({name: 'auth.login'})
-                    })
-            }
         }
 
     }

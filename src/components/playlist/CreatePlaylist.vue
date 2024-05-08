@@ -11,9 +11,12 @@
             <img id="imagePreview" src="" class="input-fields-container__input-image">
         </div>
         
-        <div @click.prevent="createPlaylist()" class="submit-button">
-            Создать
-        </div>
+        <input 
+        type="submit" 
+        :disabled="!buttonClickabilityChecker()" 
+        @click.prevent="createPlaylist()" 
+        class="submit-button"
+        value="Создать"/>
     </div>
 </template>
 
@@ -35,6 +38,10 @@ import api from '@/api';
         },
 
         methods: {
+            buttonClickabilityChecker() {
+                return this.playlistName !== '';
+            },
+
             imageInputPreview() {
                 const fileInput = document.getElementById('imageInput');
                 const imagePreview = document.getElementById('imagePreview');
@@ -44,30 +51,34 @@ import api from '@/api';
                 });
             },
 
-            createPlaylist() {
-                if (this.playlistName) {
-                    this.sendCreateAlbumRequest();
-                    this.hideModal();                
-                }
+            async createPlaylist() {
+                const playlistId = await this.sendCreateAlbumRequest();
+                await this.sendSetPlaylistPhotoRequest(playlistId);
+                await this.displayCreatedPlaylist(playlistId);
+                this.hideModal();
             },
 
-            sendCreateAlbumRequest() {
+            /**
+             * @returns {Promise}
+             */
+            async sendCreateAlbumRequest() {
                 const jsonData = {
                     name: this.playlistName
                 };
                 const url = 'http://music.local/api/playlists/create-playlist'; 
-                const responsePromise = api.post(url, jsonData);
-                if (this.imageFile) {
-                    responsePromise.then(this.sendSetPlaylistPhotoRequest())
-                }
+                const response = await api.post(url, jsonData);
+                const createdPlaylistId = response.data.playlistId;
+                return createdPlaylistId;   
             },
 
-            sendSetPlaylistPhotoRequest() {
-                return (responseResult) => {
-                    const playlistId = responseResult.data.playlistId;
+            /**
+             * @param {number} playlistId 
+             */
+            async sendSetPlaylistPhotoRequest(playlistId) {                
+                if (this.imageFile) {
                     const formData = this.makeImageFormData(); 
                     const url = `http://music.local/api/playlists/${playlistId}/update-playlist-photo`; 
-                    api.post(url, formData);
+                    await api.post(url, formData);
                 }
             },
 
@@ -77,9 +88,17 @@ import api from '@/api';
                 return formData;
             },
 
+            /**
+             * @param {number} playlistId 
+             */
+            async displayCreatedPlaylist(playlistId) {
+                const url = `http://music.local/api/playlists/${playlistId}`;
+                const response = await api.get(url);
+                const createdPlaylist = response.data;
+                this.$parent.$data.userPlaylists.push(createdPlaylist);
+            },
+
             hideModal() {
-                // TODO: ADAPT TO UserPlaylists COMPONENT
-                // NOT READY
                 this.$parent.hideModal();
             },
         }

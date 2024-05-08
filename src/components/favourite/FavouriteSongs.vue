@@ -3,7 +3,7 @@
         <div class="title">Любимые треки</div>
         <div id="songs" class="songs" v-if="favouriteSongs">
             <template v-for="song in favouriteSongs">
-                <song-card :song="song"></song-card>
+                <song-card :songProps="song"></song-card>
             </template>
         </div>
     </div>

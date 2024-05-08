@@ -2,13 +2,13 @@
     <div class="confirmation-box">
         <div class="title">
             Вы уверены, что хотите<br>
-            удалить этот трек?
+            удалить этот альбом?
         </div>
         <div class="buttons-container">
-            <div @click.prevent="deleteSong()" class="submit-button danger">
+            <div @click.prevent="deleteAlbum()" class="submit-button danger">
                 Удалить
             </div>
-            <div @click.prevent="closeDeleteConfirmationModal()" class="submit-button">
+            <div @click.prevent="closeDeleteAlbumModal()" class="submit-button">
                 Отмена
             </div>
         </div>
@@ -17,35 +17,31 @@
 <script>
 import api from "@/api";
 export default {
-    name: "DeleteSong",
+    name: "DeleteAlbum",
 
     props: [
-        "song"
+        "album"
     ],
 
     methods: {
 
-        deleteSong() {
-            const url = `http://music.local/api/albums/${this.song.albumId}/songs/${this.song.id}/delete-song`;
-            api.delete(url).then(this.hideSongCard);
-            this.$parent.hideEditSongModal();
+        deleteAlbum() {
+            const url = `http://music.local/api/albums/${this.album.id}/delete-album`;
+            api.delete(url).then(this.redirectToArtist);
         },
 
-        closeDeleteConfirmationModal() {
-            const overlayId = "editSongModalOverlay";
-            const modalId = "editSongModal";
+        closeDeleteAlbumModal() {
+            const overlayId = "deleteAlbumModalOverlay";
+            const modalId = "deleteAlbumModal";
 
-            const hideModalCallback = this.$parent.hideDeleteConfirmationModal(overlayId, modalId);
+            const hideModalCallback = this.$parent.hideDeleteAlbumModal(overlayId, modalId);
             hideModalCallback();
         },
 
-        hideSongCard() {
-            const songCard = document.getElementById(`song_${this.song.id}`)
-            songCard.style.opacity = '0'
-            setTimeout(() => {
-                songCard.remove()
-            }, 500)
-        },
+        redirectToArtist() {
+            const artistRoute = { name: 'artist.single', params: { id: this.album.artistId }};
+            this.$router.push(artistRoute);
+        }
     }
 }
 </script>

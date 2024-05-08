@@ -7,17 +7,30 @@
         <div class="input-fields-container">
 
             <div class="select-genre-and-name">
-                
-                <label for="nameInput" class="input-name-label">Выберите имя</label>
-                <input id="nameInput" v-model="albumName" type="text" class="input-name">
-                
-                <select-genre :preSelectedGenreId="null"></select-genre>
+                <div class="select-name">
+                    <label for="nameInput" class="input-name-label">Выберите имя</label>
+                    <input id="nameInput" v-model="albumName" type="text" class="input-name">
+                </div>
+                <div class="select-genre">
+                    <select-genre ref="selectGenreRef" :preSelectedGenreId="null"></select-genre>
+                </div>
             </div>
             
-            <div class="select-image">
-                <label for="imageInput" class="input-image-label">Выбрать обложку</label>
-                <input id="imageInput" type="file" accept="image/png">
-                <img id="imagePreview" class="image-preview">            
+            <div class="select-image-and-publish-time">
+                <div class="select-image">
+                    <label for="imageInput" class="input-image-label">Выбрать обложку</label>
+                    <input id="imageInput" type="file" accept="image/png">
+                    <img id="imagePreview" src="" class="image-preview">     
+                </div>
+                <div class="select-publish-time">
+                    <label for="createPublishTime">Выберите время публикации альбома: </label>
+                    <input
+                    v-on:change="publishTimeChangeHandler"
+                    type="datetime-local"
+                    id="createPublishTime"
+                    :value="currentTime"
+                    :min="currentTime" />        
+                </div>
             </div>
         </div>
         
@@ -31,7 +44,7 @@ import api from '@/api';
 import SelectGenre from '@/components/genre/SelectGenre.vue'
 
     export default {
-        name: 'EditAlbum',
+        name: 'CreateAlbum',
 
         components: {
             SelectGenre
@@ -41,18 +54,32 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
             return {
                 albumImage: null,
                 albumName: '',
+                albumPublishTime: null
             }
         },
 
-        mounted() {
-            this.imgInputPreview();
+        computed: {
+            currentTime() {
+                const currentTime = new Date();
+                return currentTime.toISOString().slice(0, 16);
+            }
         },
 
         methods: {
+            onMounted() {
+                this.imgInputPreview();
+                this.$refs.selectGenreRef.getGenres();
+            },
+
+            publishTimeChangeHandler() {
+                const publishTimeInput = document.getElementById('createPublishTime');
+                this.albumPublishTime = publishTimeInput.value;
+            },
 
             imgInputPreview() {
-                const fileInput = document.getElementById('imageInput');
-                const imagePreview = document.getElementById('imagePreview');
+                const createAlbum = document.querySelector('.create-album');
+                const fileInput = createAlbum.querySelector('#imageInput');
+                const imagePreview = createAlbum.querySelector('#imagePreview');
 
                 fileInput.addEventListener('change', (event) => {
                     this.albumImage = event.target.files[0];
@@ -62,15 +89,28 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
 
             createAlbum() {
                 if (this.albumImage && this.albumName) {
-                    const formData = this.makeFormData();
-                    this.sendPostRequest(formData);
-                    this.hideModal();
+                    this.sendCreateAlbumRequest()
+                        .then(this.displayCreatedAlbum)
+                        .then(this.hideModal);
                 }
             },
 
-            sendPostRequest(formData) {
+            displayCreatedAlbum(response) {
+                const albumId = response.data;
+                return new Promise(resolve => {
+                    const url = `http://music.local/api/albums/${albumId}`;
+                    api.get(url).then(res => {
+                        const createdAlbum = res.data;
+                        this.$parent.$data.artistAlbums.push(createdAlbum);
+                        resolve();
+                    });
+                });
+            },
+
+            sendCreateAlbumRequest() {
+                const formData = this.makeFormData();
                 const url = `http://music.local/api/albums/create-album`;
-                api.post(url, formData).then(this.$parent.updatePage);
+                return api.post(url, formData);
             },
          
 
@@ -79,6 +119,7 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
                 formData.append('name', this.albumName);
                 formData.append('genreId', this.getSelectedGenreId());
                 formData.append('photo', this.albumImage);
+                formData.append('publishTime', this.albumPublishTime);
                 return formData;
             },
 
@@ -100,8 +141,8 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
             },
 
             hideModal() {
-                const modalId = "editAlbumModal";
-                const overlayId = "editAlbumOverlay";
+                const modalId = "createAlbumModal";
+                const overlayId = "createAlbumOverlay";
                 
                 const hideModalCallback = this.$parent.hideModal(overlayId, modalId);
                 hideModalCallback();
@@ -153,6 +194,15 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
         border-radius: 10px;
     }
 
+    .select-name {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .select-genre {
+
+    }
+
     .input-name {
         padding: 5px;
         border-radius: 10px;
@@ -164,9 +214,20 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
         outline: 0;
     }
 
-    .select-image {
+    .select-image-and-publish-time {
         display: flex;
         flex-direction: column;
+        gap: 20px;
+    }
+
+    .select-image {
+        display: flex;
+        flex-direction: column;        
+    }
+
+    .select-publish-time {
+        display: flex;
+        flex-direction: column;        
     }
 
     .input-image-label {

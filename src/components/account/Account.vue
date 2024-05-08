@@ -3,12 +3,15 @@
         <div class="user-account">
             <div class="title">Мои данные</div>
             <div class="personal-info" v-if="personalInfo">
-                <div class="personal-info__name">
+                <div class="personal-name">
                     <span><strong>Имя:</strong></span> {{ personalInfo.name }}
                 </div>
-                <div class="personal-info__email">
+                <div class="personal-email">
                     <span><strong>Почта:</strong></span> {{ personalInfo.email }}
                 </div>
+            </div>
+            <div class="submit-button danger" @click.prevent="logoutUser">
+                Выйти
             </div>
         </div>
         <div class="artist-account">
@@ -16,8 +19,7 @@
             <div v-if="artist">
                 <div class="artist-card select-none">
                     <div class="artist-photo-container">
-                        <img class="artist-photo-container__photo" v-show="!imageError" :src="photoSrc" @error="this.imageError = true">
-                        <img class="artist-photo-container__photo" v-show="imageError" :src="altPhotoSrc">
+                        <img class="artist-photo" :src="photoSrc">
                     </div>
                     <div class="artist-info">
                         <router-link :to="{ name: 'artist.single', params: { id: artist.id }}" class="artist-info__name">
@@ -27,7 +29,20 @@
                 </div>
             </div>
             <div v-else>
-
+                <div class="create-artist-box">
+                    <div class="create-artist-title">У вас нет аккаунта артиста</div>
+                    <div @click.prevent="openModalCreateArtist()" class="submit-button">
+                        Создать<br> 
+                        аккаунт артиста
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div class="modal" id="createArtistModal">
+            <div class="modal-overlay" id="createArtistModalOverlay"></div>
+            <div class="modal-window">
+                <create-artist ref="createArtistRef"></create-artist>
             </div>
         </div>
     </div>
@@ -35,9 +50,14 @@
 
 <script>
 import api from '@/api';
+import CreateArtist from '../artist/CreateArtist.vue';
 
 export default {
     name: "Account",
+
+    components: {
+        CreateArtist
+    },
 
     data() {
         return {
@@ -45,23 +65,13 @@ export default {
             artist: null,
             imageError:  null,
             photoSrc: null,
-            altPhotoSrc: "/src/icons/base_img.jpg"
         }
     },
 
 
     mounted() {
         this.getPersonalInfo()
-            .then(() => {
-                if (this.personalInfo.artistId) {
-                    this.getArtistInfo()
-                        .then(() => {
-                            this.photoSrc = `http://music.local:9005/photo/${this.artist.photoPath}`;
-                        })
-                }
-            })
-
-        
+            .then(this.getArtistInfo);
     },
 
     methods: {
@@ -73,9 +83,55 @@ export default {
         },
 
         getArtistInfo() {
-            return api.get(`http://music.local/api/artists/${this.personalInfo.artistId}`)
+            if (this.personalInfo.artistId) {
+                api.get(`http://music.local/api/artists/${this.personalInfo.artistId}`)
+                    .then( res => {
+                        this.artist = res.data;
+                        this.photoSrc = `http://music.local:9005/photo/${this.artist.photoPath}`;
+                    })
+            }
+        },
+
+        openModalCreateArtist() {
+            this.$refs.createArtistRef.onMounted();
+
+            const modalId = "createArtistModal";
+            const overlayId = "createArtistModalOverlay";
+
+            this.openModal(overlayId, modalId);
+        },
+
+        openModal(overlayId, modalId) {
+            const modal = document.querySelector(`#${modalId}`);
+            
+            modal.style.visibility = "visible"
+            modal.style.opacity = "1"
+            
+            setTimeout(() => {
+                this.overlayClickListener(overlayId, modalId);
+            }, 500)
+        },
+
+        overlayClickListener(overlayId, modalId) {
+            const overlay = document.querySelector(`#${overlayId}`);
+            overlay.addEventListener('click', this.hideModal(overlayId, modalId));
+        },
+
+        hideModal(overlayId, modalId) {
+            return () => {
+                const overlay = document.querySelector(`#${overlayId}`);
+                const modal = document.querySelector(`#${modalId}`);
+                modal.style.visibility = "hidden"
+                modal.style.opacity = "0"
+                overlay.removeEventListener('click', this.hideModal(overlayId, modalId))
+            }
+        },
+
+        logoutUser() {
+            api.post('http://music.local/api/auth/logout')
                 .then( res => {
-                    this.artist = res.data
+                    localStorage.removeItem('access_token')
+                    this.$router.push({name: 'auth.login'})
                 })
         },
     }
@@ -139,6 +195,45 @@ export default {
         background-color: rgba(125, 125, 125, 0.2);
     }
 
+    .create-artist-box {
+        padding: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-direction: column;
+        background-color: rgba(125, 125, 125, 0.2);
+        border-radius: 10px;
+    }
+
+    .create-artist-title {
+        padding: 5px;
+        font-weight: bold;
+    }
+
+    .submit-button {
+        padding: 3px 10px;
+        background-color: rgba(125, 125, 125, 0.2);
+        border-radius: 10px;
+        width: fit-content;
+        text-align: center;
+        /* font-size: 17px; */
+        transition: 0.2s background-color;
+        cursor: pointer;
+    }
+
+    .submit-button:hover {
+        background-color: rgba(125, 125, 125, 0.4);
+    }
+
+    .submit-button:active {
+        background-color: rgba(125, 125, 125, 0.8);
+    }
+
+    .danger {
+        outline: 1px solid red;
+        color: red;
+    }
+
     .artist-photo-container {
         width: 100%;
         position: relative;
@@ -148,7 +243,7 @@ export default {
         
     }
     
-    .artist-photo-container__photo {
+    .artist-photo {
         width: 150px;
         height: 150px;
         border-radius: 50%;
@@ -185,4 +280,42 @@ export default {
         color: black;      
         text-decoration: none;  
     }
+
+    .modal {
+        position: fixed;
+
+        top:0;
+        left:0;
+
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+
+        display: flex;
+
+        visibility: hidden;
+        opacity: 0;
+
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(15px);
+        
+
+        transition: opacity 0.5s, visibility 0.5s, backdrop-filter 0.2s; 
+    }
+
+    .modal-overlay {
+        position: absolute;
+        width: inherit;
+        height: inherit;
+        background-color: rgba(125, 125, 125, 0.2);
+    }
+
+    .modal-window {
+        position: absolute;
+        z-index: 21;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
 </style>

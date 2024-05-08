@@ -1,51 +1,57 @@
 <template>
-    <div class="playlist-selection">
+    <div id="deleteFromPlaylist" class="playlist-selection">
         <div class="title">
-            Выберите плейлисты
+            Выберите плейлисты,<br>
+            из которых хотите <strong>удалить</strong><br> 
+            этот трек
         </div>
-        <div class="playlists" v-show="userPlaylists">
+        <div class="playlists" v-if="userPlaylists">
             <template v-for="playlist in userPlaylists">
                 <div class="playlist-card" :id="`playlist_${playlist.id}`">
 
-                    <div v-if="checkIfSongInPlaylist(playlist.id)" class="unavailable-playlist">
+                    <div v-if="!checkIfSongInPlaylist(playlist.id)" class="unavailable-playlist">
                         Плейлист<br>
-                        уже содержит
+                        не содержит
                         этот трек
                     </div>
 
-                    <template v-if="!checkIfSongInPlaylist(playlist.id)">
+                    <template v-if="checkIfSongInPlaylist(playlist.id)">
                         <div class="selection-overlay"></div>
                         <div @click.prevent="selectPlaylist(playlist.id)" class="selection-mark"></div>
                     </template>
 
                     <div class="playlist-photo-container">
-                        <img class="playlist-photo-container__photo select-none" v-show="!imageError" :src="`http://music.local:9005/photo/${playlist.photoPath}`" @error="this.imageError = true">
-                        <img class="playlist-photo-container__photo select-none" v-show="imageError" :src="altPhotoSrc">
+                        <img class="playlist-photo select-none" :src="`http://music.local:9005/photo/${playlist.photoPath}`">
                     </div>
 
                     <div class="playlist-info">
-                        <div class="playlist-info__name">
+                        <div class="playlist-name">
                             {{ playlist.name }}
                         </div>
                     </div>
                 </div>
             </template>
         </div>
-        <div @click.prevent="addSongToPlaylists()" class="submit-button">
-            Добавить
-        </div>
+        <input 
+            type="submit" 
+            :disabled="!buttonClickabilityChecker()" 
+            @click.prevent="deleteSongFromPlaylists()" 
+            class="submit-button" 
+            value="Удалить"
+        /> 
     </div>
 </template>
 <script>
 import api from "@/api";
 export default {
-    name: 'SelectPlaylist',
+    name: 'AddToPlaylist',
 
     data() {
         return {
             imageError: false,
             altPhotoSrc: "/src/icons/base_img.jpg",
             selectedPlaylists: [],
+            userPlaylists: []
         }
     },
 
@@ -53,16 +59,31 @@ export default {
         'song',
     ],
 
-    computed: {
-        userPlaylists() {
-            return this.$parent.userPlaylists;
-        }
-    },
-
     methods: {
+        buttonClickabilityChecker() {
+            return this.selectedPlaylists.length > 0;
+        },
+
+        getUserPlaylists() {
+            api.get('http://music.local/api/playlists')
+            .then( res => {
+                this.userPlaylists = res.data
+            })
+        },
+
+        checkIfSongInPlaylist(playlistId) {
+            const playlistsWithSong = []
+            this.song.containedInPlaylists.forEach((element) => {
+                playlistsWithSong.push(element.id)
+            })
+
+            return playlistsWithSong.includes(playlistId);
+        },
+
         selectPlaylist(selectedPlaylistId) {
-            const songCard = document.getElementById(`song_${this.song.id}`)
-            const playlist = songCard.querySelector(`#playlist_${selectedPlaylistId}`);
+            const songCard = document.getElementById(`song_${this.song.id}`);
+            const playlistsSelection = songCard.querySelector(`#deleteFromPlaylist`);
+            const playlist = playlistsSelection.querySelector(`#playlist_${selectedPlaylistId}`);
 
             const selectionOverlay = playlist.querySelector('.selection-overlay');
             const selectionMark = playlist.querySelector('.selection-mark');
@@ -86,26 +107,40 @@ export default {
             }
         },
 
-        addSongToPlaylists() {
-            this.selectedPlaylists.forEach( playlistId => {
-                api.put(`http://music.local/api/playlists/${playlistId}/add-song/${this.song.id}`)
-                    .then( res => {
-                        this.$parent.hideModal();
-                        this.song.containedInPlaylists.push({ id: playlistId })
-                    })
-            })
-
+        async deleteSongFromPlaylists() { 
+            await this.sendPutRequests();
+            this.hideModal();
+            this.deleteSongFromPlaylistInComponent();
         },
 
-        checkIfSongInPlaylist(playlistId) {
-            const playlistsWithSong = []
-            this.song.containedInPlaylists.forEach((element) => {
-                playlistsWithSong.push(element.id)
-            })
+        async sendPutRequests() {
+            const requests = this.selectedPlaylists.map(playlistId => {
+                const url = `http://music.local/api/playlists/${playlistId}/delete-song/${this.song.id}`
+                return api.put(url);
+            });
 
-            return playlistsWithSong.includes(playlistId);
+            for (const request of requests) {
+                await request;
+            }
         },
 
+        deleteSongFromPlaylistInComponent() {
+            const song = this.$parent.song;
+            const containedInPlaylists = song.containedInPlaylists;
+            const selectedPlaylists = this.selectedPlaylists;
+
+            const remainingPlaylists = containedInPlaylists.filter(playlist => !selectedPlaylists.includes(playlist.id));
+
+            song.containedInPlaylists = remainingPlaylists;
+            this.selectedPlaylists = [];
+        },
+
+        hideModal() {
+            const overlayId = "deleteFromPlaylistModalOverlay";
+            const modalId = "deleteFromPlaylistModal";
+
+            this.$parent.hideModal(overlayId, modalId);
+        },
     }
 }
 </script>
@@ -134,15 +169,17 @@ export default {
 
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 20px;
     }
 
     .title {
         width: fit-content;
         background-color: rgba(125, 125, 125, 0.2);
-        padding: 5px 10px;
+        padding: 20px;
         border-radius: 10px;
         font-size: 20px;
+        text-align: center;
     }
 
     .submit-button {
@@ -259,7 +296,7 @@ export default {
         align-items: center;
     }
     
-    .playlist-photo-container__photo {
+    .playlist-photo {
         width: 150px;
         height: 150px;
         border-radius: 10px;
@@ -275,7 +312,7 @@ export default {
         margin-top: 15px;   
     }
 
-    .playlist-info__name {
+    .playlist-name {
         max-width: 150px;
 
         overflow: hidden;
@@ -288,5 +325,9 @@ export default {
         padding: 2.5px 7px;
         border-radius: 10px;
         transition: all 0.2s ease-out; 
+    }
+
+    input {
+        border: none;
     }
 </style>

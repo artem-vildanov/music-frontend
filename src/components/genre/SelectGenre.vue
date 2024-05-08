@@ -2,8 +2,7 @@
     <div class="select-genre" v-if="genres">
         <div>Выберите жанр</div>
         <template v-for="genre in genres">
-            <input v-if="genre.id === preSelectedGenreId" type="radio" :id="`genre_${genre.id}`" name="genre" :value="genre.id" checked>
-            <input v-else type="radio" :id="`genre_${genre.id}`" name="genre" :value="genre.id">
+            <input type="radio" :id="`genre_${genre.id}`" name="genre" :value="genre.id">
             <label :for="`genre_${genre.id}`">{{ genre.name }}</label><br>        
         </template>
     </div>
@@ -24,15 +23,27 @@ export default {
     ],
 
     mounted() {
-        this.getGenres();
+        // this.getGenres().then(this.preSelectGenre);
     },
 
     methods: {
+        onMounted() {
+            this.getGenres().then(this.preSelectGenre);
+        },
+
         getGenres() {
-            api.get('http://music.local/api/genres/all')
+            return api.get('http://music.local/api/genres/all')
                 .then( res => {
                     this.genres = res.data;
                 });
+        },
+
+        preSelectGenre() {
+            if (this.preSelectedGenreId) {
+                const selectedGenreId = `genre_${this.preSelectedGenreId}`;
+                const selectedGenre = document.getElementById(selectedGenreId);
+                selectedGenre.checked = true;
+            }
         },
     },
 }
