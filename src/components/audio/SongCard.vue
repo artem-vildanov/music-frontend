@@ -3,7 +3,7 @@
 
         <div class="song-photo-container">
             <div class="song-photo-overlay">
-                <div class="play-audio-action">
+                <div @click.prevent="playSong({ songId: song.id, songsCollection: $parent.$data.songsCollection })" class="play-audio-action">
                     <img class="icon select-none" src="../../icons/play.svg">
                 </div>
             </div>
@@ -70,6 +70,8 @@ import AddToPlaylist from "../playlist/AddToPlaylist.vue";
 import DeleteFromPlaylist from "../playlist/DeleteFromPlaylist.vue";
 import api from "@/api"
 import EditSong from "./EditSong.vue";
+import { mapActions } from 'vuex';
+
     export default {
         name: "SongCard",
 
@@ -94,6 +96,11 @@ import EditSong from "./EditSong.vue";
         },
 
         methods: {
+            ...mapActions([
+                'playSong',
+
+            ]),
+
             openModalEditSong() {
                 const overlayId = "editSongModalOverlay";
                 const modalId = "editSongModal";
@@ -154,18 +161,6 @@ import EditSong from "./EditSong.vue";
             removeFromFavourites() {
                 api.put(`http://music.local/api/favourite/songs/delete-from-favourites/${this.song.id}`)
                 this.song.isFavourite = false
-
-                if (this.$parent.$data.favouriteSongs) {
-                    this.hideSongCard()
-                }
-            },
-
-            hideSongCard() {
-                const songCard = document.getElementById(`song_${this.song.id}`)
-                songCard.style.opacity = '0'
-                setTimeout(() => {
-                    songCard.remove()
-                }, 500)
             },
         }
     }

@@ -34,7 +34,7 @@
         </div>
    
         <div class="album-songs">
-            <template v-for="song in albumSongs">
+            <template v-for="song in songsCollection">
                 <song-card :songProps="song"></song-card>
             </template>
         </div>
@@ -73,7 +73,7 @@ export default {
             imageError: false,
             albumId: this.$route.params.id, 
             album: null,
-            albumSongs: null,
+            songsCollection: null,
             photoSrc: null,
             userInfo: null
         }
@@ -103,7 +103,7 @@ export default {
             const url = `http://music.local/api/albums/${this.albumId}/songs/album-songs`;
             api.get(url)
             .then( res => {
-                this.albumSongs = res.data
+                this.songsCollection = res.data
             })
         },
 

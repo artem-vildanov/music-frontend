@@ -47,18 +47,6 @@ import api from '@/api'
             removeFromFavourites() {
                 api.put(`http://music.local/api/favourite/albums/delete-from-favourites/${this.album.id}`)
                 this.album.isFavourite = false
-
-                if (this.$parent.$data.favouriteAlbums) {
-                    this.hideAlbumCard()
-                }
-            },
-
-            hideAlbumCard() {
-                const albumCard = document.getElementById(`album_${this.album.id}`)
-                albumCard.style.opacity = '0'
-                setTimeout(() => {
-                    albumCard.remove()
-                }, 500)
             },
         }
     }

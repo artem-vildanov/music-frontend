@@ -84,7 +84,7 @@ export default {
         async displayCreatedSong(songId) {
             const url = `http://music.local/api/albums/${this.albumId}/songs/${songId}`;
             const createdSong = await api.get(url);
-            this.$parent.$data.albumSongs.push(createdSong);
+            this.$parent.$data.songsCollection.push(createdSong);
         },
 
         hideModal() {

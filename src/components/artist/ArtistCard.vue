@@ -48,18 +48,6 @@ import api from '@/api'
             removeFromFavourites() {
                 api.put(`http://music.local/api/favourite/artists/delete-from-favourites/${this.artist.id}`)
                 this.artist.isFavourite = false
-
-                if (this.$parent.$data.favouriteArtists) {
-                    this.hideArtistCard()
-                }
-            },
-
-            hideArtistCard() {
-                const artistCard = document.getElementById(`artist_${this.artist.id}`)
-                artistCard.style.opacity = '0'
-                setTimeout(() => {
-                    artistCard.remove()
-                }, 500)
             },
         }
     }

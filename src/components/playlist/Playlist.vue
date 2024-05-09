@@ -17,7 +17,7 @@
         </div>
    
         <div class="playlist-songs">
-            <template v-for="song in playlistSongs">
+            <template v-for="song in songsCollection">
                 <song-card :songProps="song"></song-card>
             </template>
         </div>
@@ -47,7 +47,7 @@ export default {
         return {
             playlistId: null, 
             playlist: null,
-            playlistSongs: null,
+            songsCollection: null,
             photoSrc: null,
         }
     },
@@ -76,7 +76,7 @@ export default {
             const url = `http://music.local/api/playlists/${this.playlistId}/playlist-songs`;
             api.get(url)
             .then( res => {
-                this.playlistSongs = res.data
+                this.songsCollection = res.data
             })
         },
 

@@ -1,8 +1,8 @@
 <template>
     <div class="favourite-songs">
         <div class="title">Любимые треки</div>
-        <div id="songs" class="songs" v-if="favouriteSongs">
-            <template v-for="song in favouriteSongs">
+        <div id="songs" class="songs" v-if="songsCollection">
+            <template v-for="song in songsCollection">
                 <song-card :songProps="song"></song-card>
             </template>
         </div>
@@ -20,7 +20,7 @@ import SongCard from '../audio/SongCard.vue'
 
         data() {
             return {
-                favouriteSongs: null,
+                songsCollection: null,
                 userInfo: null
             }
         },
@@ -42,7 +42,7 @@ import SongCard from '../audio/SongCard.vue'
             getFavouriteSongs() {
                 api.get('http://music.local/api/favourite/songs')
                 .then( res => {
-                    this.favouriteSongs = res.data
+                    this.songsCollection = res.data
                 }) 
             },
         }

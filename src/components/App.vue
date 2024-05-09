@@ -29,39 +29,59 @@
         
         <router-view class="container"></router-view>
         
-        <!-- <div class="audio-player">Audio player</div> -->
+        
+        <div v-if="audioPlayerStatus" class="audio-player">
+            <AudioPlayer/>
+        </div>
     </div>
 </template>
 
 <script>
-    import api from '@/api.js'
-    export default {
-        name: "App",
+import api from '@/api.js';
+import AudioPlayer from './audio/AudioPlayer.vue';
+import { mapGetters } from 'vuex';
+export default {
+    name: "App",
 
-        data() {
-            return {
-                accessToken: null
-            }
-        },
+    components: {
+        AudioPlayer
+    },
 
-        mounted() {
+    data() {
+        return {
+            accessToken: null,
+            audioPlayerStatus: false,
+        }
+    },
+
+    computed: {
+        ...mapGetters(['getCurrentSong'])
+    },
+
+    mounted() {
+        this.getAccessToken()
+    },
+
+    watch: {
+        $route(to, from) {
             this.getAccessToken()
         },
 
-        watch: {
-            $route(to, from) {
-                this.getAccessToken()
-            },
+        getCurrentSong(newValue, oldValue) {
+            if (newValue !== undefined && oldValue === undefined) {
+                this.audioPlayerStatus = true;
+            }
         },
+    },
 
 
-        methods: {
-            getAccessToken() {
-                this.accessToken = localStorage.getItem('access_token')
-            },
-        }
-
+    methods: {
+        getAccessToken() {
+            this.accessToken = localStorage.getItem('access_token')
+        },
     }
+
+}
 </script>
 
 <style scoped>
@@ -218,18 +238,17 @@
 
     .audio-player {
         position: fixed;
-        bottom: 0px;
+        bottom: 10px;
         /* bottom: 0; */
         left: 20%;
         right: 20%;
         width: 60%;
-        height: 40px;
-        background-color: #353855;
+        height: fit-content;
+        /* background-color: #353855; */
 
-        text-align: center;
-        padding: 5px;
         color: white;
         font-weight: bold;
-        border-radius: 20px 20px 0px 0px;
+
+
     }
 </style>
