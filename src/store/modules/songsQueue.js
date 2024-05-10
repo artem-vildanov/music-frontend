@@ -1,22 +1,20 @@
 const songsQueue = {
     actions: {
-        getNextSong({ commit, state, getters }) {
-            if (state.songsQueue.length > 0) {
+        playNextSong({commit, state}) {
+            if (state.songsQueue.length > (state.queuePointer + 1)) {
                 commit('setNextSongPointer');
-                return getters('getCurrentSong');
+                commit('setPlayPlayerState');
             }
         },
 
-        getPreviousSong({ commit, state, getters }) {
+        playPreviousSong({commit, state}) {
             if (state.queuePointer > 0) {
                 commit('setPreviousSongPointer');
-                return getters('getCurrentSong');
+                commit('setPlayPlayerState');
             }
         },
 
         playSong({ commit }, { songId, songsCollection }) {
-            console.log(songId);
-            console.log(songsCollection);
             commit('setQueue', songsCollection);
             const index = songsCollection.findIndex(collectionItem => collectionItem.id === songId);
             commit('setQueuePointer', index);
@@ -26,7 +24,7 @@ const songsQueue = {
 
     mutations: {
         enqueueSong(state, song) {
-            state.songsQueue.push(song);
+            state.songsQueue.splice((state.queuePointer + 1), 0, song);
         },
         dequeueSong(state, songId) {
             state.songsQueue = state.songsQueue.filter(song => song.id !== songId);

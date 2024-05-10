@@ -17,7 +17,7 @@
         <input
         type="submit"
         value="Создать"
-        :disabled="buttonClickabilityChecker()" 
+        :disabled="!buttonClickabilityChecker()" 
         @click.prevent="createSong()" 
         class="submit-button"/>
     </div>
@@ -25,6 +25,7 @@
 
 <script>
 import api from '@/api';
+import { mapMutations } from 'vuex';
 
 export default {
     name: "CreateSong",
@@ -83,7 +84,8 @@ export default {
          */
         async displayCreatedSong(songId) {
             const url = `http://music.local/api/albums/${this.albumId}/songs/${songId}`;
-            const createdSong = await api.get(url);
+            const response = await api.get(url);
+            const createdSong = response.data;
             this.$parent.$data.songsCollection.push(createdSong);
         },
 

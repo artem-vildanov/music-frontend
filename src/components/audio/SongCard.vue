@@ -1,5 +1,5 @@
 <template>
-    <div class="song-card" :id="`song_${song.id}`">
+    <div :class="`song-card ${songCardSelection}`" :id="`song_${song.id}`">
 
         <div class="song-photo-container">
             <div class="song-photo-overlay">
@@ -28,6 +28,9 @@
                 <img class="icon" src="/src/icons/more.svg">
 
                 <div class="hidden-actions-container">
+                    <div class="song-action hidden-action">
+                        <img @click.prevent="enqueueSong(song)" class="centered-icon icon" src="../../icons/add_to_queue.svg">
+                    </div>
                     <div class="song-action hidden-action">
                         <img @click.prevent="openModalAddToPlaylist()" class="centered-icon icon" src="../../icons/add_to_playlist.svg">
                     </div>
@@ -70,7 +73,7 @@ import AddToPlaylist from "../playlist/AddToPlaylist.vue";
 import DeleteFromPlaylist from "../playlist/DeleteFromPlaylist.vue";
 import api from "@/api"
 import EditSong from "./EditSong.vue";
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 
     export default {
         name: "SongCard",
@@ -95,10 +98,25 @@ import { mapActions } from 'vuex';
             }
         },
 
+        computed: {
+            ...mapGetters([
+                'getCurrentSong',
+            ]),
+
+            songCardSelection() {
+                if (this.getCurrentSong && this.getCurrentSong.id === this.song.id) {
+                    return 'selected-song';
+                }
+            }
+        },
+
         methods: {
+            ...mapMutations([
+                'enqueueSong',
+            ]),
+
             ...mapActions([
                 'playSong',
-
             ]),
 
             openModalEditSong() {
@@ -167,6 +185,10 @@ import { mapActions } from 'vuex';
 </script>
 
 <style scoped>
+    .selected-song {
+        outline: solid 5px rgb(206, 206, 206)    
+    }
+
     .song-card {
         display: flex;
         flex-direction: row;
@@ -175,7 +197,7 @@ import { mapActions } from 'vuex';
         padding: 10px;
         border: solid 1px rgba(125, 125, 125, 0.5);
         border-radius: 10px;
-        transition: 0.5s ease-out;
+        transition: background-color 0.5s ease-out;
     }
 
     .song-card:hover {

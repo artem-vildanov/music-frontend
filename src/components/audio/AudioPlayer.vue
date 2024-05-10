@@ -1,10 +1,10 @@
 <template>
     <div class="audio-player-container">
-        <div class="song-card" v-if="getCurrentSong" :id="`song_${getCurrentSong.id}`">
+        <div class="song-card" :id="`song_${getCurrentSong.id}`">
             <div class="song-photo-container">
                 <div class="song-photo-overlay">
                     <div class="actions-container">
-                        <div class="action">
+                        <div @click.prevent="playPreviousSong()" class="action">
                             <img class="icon select-none" src="../../icons/play_previous.svg">
                         </div>
                         <div v-if="!getPlayerState" @click.prevent="play()" class="action">
@@ -13,7 +13,7 @@
                         <div v-else @click.prevent="stop()" class="action">
                             <img class="icon select-none" src="../../icons/pause.svg">
                         </div>
-                        <div class="action">
+                        <div @click.prevent="playNextSong()" class="action">
                             <img class="icon select-none" src="../../icons/play_next.svg">
                         </div>
                     </div>
@@ -28,7 +28,14 @@
                 <router-link :to="{ name: 'artist.single', params: { id: getCurrentSong.artistId }}" class="artist-name">
                     {{ getCurrentSong.artistName }}
                 </router-link>
-                <audio id="player" :src="`http://music.local:9005/audio/${getCurrentSong.musicPath}`" controls class="audio-player"></audio>
+                <div class="song-player-container">
+                    <audio id="player" class="audio-player" autoplay :src="`http://music.local:9005/audio/${getCurrentSong.musicPath}`">
+                        <!-- <source id="playerSource" :src="`http://music.local:9005/audio/${getCurrentSong.musicPath}`"> -->
+                    </audio>
+                    <div id="currentSongTime" class="song-time">0:00</div>
+                    <input type="range" id="seekBar" value="0">
+                    <div id="songDuration" class="song-time">0:00</div>
+                </div>
             </div>
 
             <div class="song-actions-container">
@@ -80,7 +87,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 export default {
     name: "AudioPlayer",
 
@@ -94,21 +101,62 @@ export default {
         ...mapGetters(['getQueue', 'getCurrentSong', 'getPlayerState']),
     },
 
-    // watch: {
-    //     getCurrentSong(newValue, oldValue) {
-    //         if (newValue !== undefined && oldValue === undefined) {
-    //             const player = document.getElementById('player');
-    //             console.log(player);
-    //         }
-    //     } 
-    // },
-
     mounted() {
-        this.play();
+        this.autoSkip();
+        this.initializeSongProgressBar();
+    },
+
+    watch: {
+        getCurrentSong(newValue, oldValue) {
+            const player = document.getElementById('player');
+            player.src = `http://music.local:9005/audio/${newValue.musicPath}`;
+            player.play();
+        }
     },
 
     methods: {
-        ...mapMutations(['setPausePlayerState', 'setPlayPlayerState']),
+        ...mapMutations([
+            'setPausePlayerState', 
+            'setPlayPlayerState', 
+            'setNextSongPointer',
+            'setPreviousSongPointer',
+        ]),
+
+        ...mapActions([
+            'playNextSong',
+            'playPreviousSong'
+        ]),
+
+        initializeSongProgressBar() {
+            const audio = document.getElementById('player');
+            const seekBar = document.getElementById('seekBar');
+            const currentTime = document.getElementById('currentSongTime');
+            const duration = document.getElementById('songDuration');
+
+            audio.addEventListener('timeupdate', function() {
+                let currentMinutes = Math.floor(audio.currentTime / 60);
+                let currentSeconds = Math.floor(audio.currentTime - currentMinutes * 60);
+                let durationMinutes = Math.floor(audio.duration / 60);
+                let durationSeconds = Math.floor(audio.duration - durationMinutes * 60);
+
+                if (currentSeconds < 10) {
+                currentSeconds = '0' + currentSeconds;
+                }
+                if (durationSeconds < 10) {
+                durationSeconds = '0' + durationSeconds;
+                }
+
+                currentTime.textContent = currentMinutes + ':' + currentSeconds;
+                duration.textContent = durationMinutes + ':' + durationSeconds;
+
+                seekBar.value = (audio.currentTime / audio.duration) * 100;
+            });
+
+            seekBar.addEventListener('change', function() {
+                let seekTo = audio.duration * (seekBar.value / 100);
+                audio.currentTime = seekTo;
+            });
+        },
 
         play() {
             const player = document.getElementById('player');
@@ -121,29 +169,39 @@ export default {
             player.pause();
             this.setPausePlayerState();
         },
+
+        autoSkip() {
+            const player = document.getElementById('player');
+            player.addEventListener('ended', () => {
+                this.playNextSong();
+            });
+        },
     },
-
-    // watch: {
-    //     getCurrentSong() {
-    //         this.resolvePlayerReadyPromise();
-    //     },
-        
-    //     getPlayerState(newValue, oldValue) {
-
-    //         const player = document.getElementById('player');
-    //         console.log(player);
-    //         if (newValue) {
-    //             player.play();
-    //         } else {
-    //             player.pause();
-    //         }
-    //     }
-    // }
 }
 
 </script>
 
 <style scoped>
+
+    .song-player-container{
+        width: 300px;
+        margin-top: 20px;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        margin-left: 5px;
+    }
+
+    #seekBar {
+        width: 100%;
+
+    }
+
+    .song-time {
+        font-weight: lighter;
+        color: rgb(51, 51, 51);
+        font-size: 10px;
+    }
 
     .song-card {
         display: flex;
@@ -154,11 +212,14 @@ export default {
         border: solid 1px rgba(125, 125, 125, 0.5);
         border-radius: 10px;
         transition: 0.5s ease-out;
+        backdrop-filter: blur(10px);
+        background-color: rgba(125, 125, 125, 0.1);
+        z-index: 70;
     }
 
-    .song-card:hover {
+    /* .song-card:hover {
         background-color: rgba(125, 125, 125, 0.2);
-    }
+    } */
 
     .song-card:hover .song-photo-overlay {
         background-color: rgba(255, 255, 255, 0.7);

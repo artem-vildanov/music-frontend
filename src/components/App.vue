@@ -90,6 +90,7 @@ export default {
         /* height: 100%; */
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
 
     .navbar {
@@ -220,7 +221,7 @@ export default {
 
     .container {
         margin-top: 100px;
-        margin-bottom: 60px;
+        margin-bottom: 200px;
 
         /* width: 80%; */
         width: fit-content;
@@ -240,12 +241,13 @@ export default {
         position: fixed;
         bottom: 10px;
         /* bottom: 0; */
-        left: 20%;
+        /* left: 20%;
         right: 20%;
-        width: 60%;
+        width: 60%; */
+        width: 760px;
         height: fit-content;
         /* background-color: #353855; */
-
+        z-index: 70;
         color: white;
         font-weight: bold;
 
