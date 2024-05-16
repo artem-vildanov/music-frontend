@@ -52,7 +52,7 @@
                         <div class="song-action hidden-action">
                             <img @click.prevent="openModalDeleteFromPlaylists()" class="centered-icon icon" src="../../icons/delete_from_playlist.svg">
                         </div>
-                        <div v-show="userInfo && getCurrentSong.artistId === userInfo.artistId" class="song-action hidden-action">
+                        <div v-show="getCurrentSong.artistId === getUserArtistId" class="song-action hidden-action">
                             <img @click.prevent="openModalEditSong()" class="centered-icon icon" src="../../icons/edit.svg">
                         </div>
                     </div>
@@ -103,7 +103,12 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['getQueue', 'getCurrentSong', 'getPlayerState']),
+        ...mapGetters([
+            'getQueue',
+            'getCurrentSong', 
+            'getPlayerState', 
+            'getUserArtistId'
+        ]),
     },
 
     mounted() {

@@ -2,30 +2,40 @@ import api from "@/api";
 
 const userInfo = {
     actions: {
-        async fetchUserInfo(state) {
-            const url = `http://music.local/api/auth/me`;
-            const response = await api.get(url);
-            state.userInfo = response.data;
-        }
+        // fetchUserInfo(state) {
+        //     const url = `http://music.local/api/auth/me`;
+        //     api.get(url).then( response => {
+        //         state.info = response.data;
+        //         console.log(state.info);
+        //     })
+        // }
     },
 
     mutations: {
         deleteUserInfo(state) {
-            state.userInfo = null
+            state.info = null
+        },
+
+        setUserInfo(state, userInfo) {
+            state.userInfo = userInfo;
         }
     },
 
     state: {
-        userInfo: null,
+        info: null,
     },
 
     getters: {
         getUserInfo(state) {
-            return state.userInfo;
+            return state.info;
         },
 
         getUserArtistId(state) {
-            return state.userInfo.artistId;
+            if (state.info) {
+                return state.info.artistId;
+            }
+
+            return null;
         },
     }
 }

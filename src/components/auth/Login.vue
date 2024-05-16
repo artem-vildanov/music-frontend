@@ -11,6 +11,7 @@
 
 <script>
 import axios from 'axios'
+import { mapActions } from 'vuex';
 
 export default {
     name: "login",
@@ -23,12 +24,20 @@ export default {
     },
 
     methods: {
-        login() {
-            axios.post('http://music.local/api/auth/login', {email: this.email, password: this.password})
-                .then( res => {
-                    localStorage.setItem('access_token', res.data.access_token);
-                    this.$router.push({name: 'account.user'});
-                })
+        ...mapActions([
+            'fetchUserInfo',
+        ]),
+
+        async login() {
+            const url = "http://music.local/api/auth/login";
+            const jsonData = {
+                email: this.email,
+                password: this.password,
+            };
+
+            const response = await axios.post(url, jsonData);
+            localStorage.setItem('access_token', response.data.access_token);
+            this.$router.push({name: 'account.user'});
         },
     }
 }
