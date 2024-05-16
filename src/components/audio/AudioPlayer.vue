@@ -1,5 +1,5 @@
 <template>
-    <div class="audio-player-container">
+    <div id="audioPlayer" class="audio-player-container">
         <div class="song-card" :id="`song_${getCurrentSong.id}`">
             <div class="song-photo-container">
                 <div class="song-photo-overlay">
@@ -30,7 +30,6 @@
                 </router-link>
                 <div class="song-player-container">
                     <audio id="player" class="audio-player" autoplay :src="`http://music.local:9005/audio/${getCurrentSong.musicPath}`">
-                        <!-- <source id="playerSource" :src="`http://music.local:9005/audio/${getCurrentSong.musicPath}`"> -->
                     </audio>
                     <div id="currentSongTime" class="song-time">0:00</div>
                     <input type="range" id="seekBar" value="0">
@@ -46,22 +45,22 @@
                 <div tabindex="0" class="song-action open-hidden-actions">
                     <img class="icon" src="/src/icons/more.svg">
 
-                    <!-- <div class="hidden-actions-container">
+                    <div class="hidden-actions-container">
                         <div class="song-action hidden-action">
                             <img @click.prevent="openModalAddToPlaylist()" class="centered-icon icon" src="../../icons/add_to_playlist.svg">
                         </div>
                         <div class="song-action hidden-action">
                             <img @click.prevent="openModalDeleteFromPlaylists()" class="centered-icon icon" src="../../icons/delete_from_playlist.svg">
                         </div>
-                        <div v-show="userInfo && song.artistId === userInfo.artistId" class="song-action hidden-action">
+                        <div v-show="userInfo && getCurrentSong.artistId === userInfo.artistId" class="song-action hidden-action">
                             <img @click.prevent="openModalEditSong()" class="centered-icon icon" src="../../icons/edit.svg">
                         </div>
-                    </div> -->
+                    </div>
 
                 </div>
             </div>
 
-            <!-- <div class="modal" id="addToPlaylistModal">
+            <div class="modal" id="addToPlaylistModal">
                 <div class="modal__overlay" id="addToPlaylistModalOverlay"></div>
                 <div class="modal__window">
                     <add-to-playlist ref="addToPlaylistRef" :song="getCurrentSong"></add-to-playlist>
@@ -76,20 +75,26 @@
             <div class="modal" id="editSongModal">
                 <div class="modal__overlay" id="editSongModalOverlay"></div>
                 <div class="modal__window">
-                    <edit-song :song="song"></edit-song>
+                    <edit-song :song="getCurrentSong"></edit-song>
                 </div>
-            </div> -->
+            </div>
         </div>
-        
-        <!-- <div>current song: {{ getCurrentSong }}</div>
-        <div>songs queue: {{ getQueue }}</div> -->
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
+import AddToPlaylist from '../playlist/AddToPlaylist.vue';
+import DeleteFromPlaylist from '../playlist/DeleteFromPlaylist.vue';
+import EditSong from './EditSong.vue';
 export default {
     name: "AudioPlayer",
+
+    components: {
+        AddToPlaylist,
+        DeleteFromPlaylist,
+        EditSong
+    },
 
     data() {
         return {
@@ -110,7 +115,10 @@ export default {
         getCurrentSong(newValue, oldValue) {
             const player = document.getElementById('player');
             player.src = `http://music.local:9005/audio/${newValue.musicPath}`;
-            player.play();
+            const playPromise = player.play();
+            playPromise.catch(error => {
+                // console.log('error')
+            })
         }
     },
 
@@ -160,7 +168,10 @@ export default {
 
         play() {
             const player = document.getElementById('player');
-            player.play();
+            player.play()
+                .catch(error => {
+                    
+                })
             this.setPlayPlayerState();
         },
 
@@ -175,6 +186,69 @@ export default {
             player.addEventListener('ended', () => {
                 this.playNextSong();
             });
+        },
+        
+
+        openModalEditSong() {
+            const overlayId = "editSongModalOverlay";
+            const modalId = "editSongModal";
+
+            this.openModal(overlayId, modalId);
+        },
+
+        openModalAddToPlaylist() {
+            const overlayId = "addToPlaylistModalOverlay";
+            const modalId = "addToPlaylistModal";
+
+            this.$refs.addToPlaylistRef.getUserPlaylists();
+            this.openModal(overlayId, modalId);
+        },
+
+        openModalDeleteFromPlaylists() {
+            const overlayId = "deleteFromPlaylistModalOverlay";
+            const modalId = "deleteFromPlaylistModal";
+
+            this.$refs.deleteFromPlaylistRef.getUserPlaylists();
+            this.openModal(overlayId, modalId);
+        },
+
+        openModal(overlayId, modalId) {
+            const audioPlayer = document.getElementById("audioPlayer");
+            const modal = audioPlayer.querySelector(`#${modalId}`);
+            
+            modal.style.visibility = "visible"
+            modal.style.opacity = "1"
+            
+            setTimeout(() => {
+                this.overlayClickListener(overlayId, modalId);
+            }, 500)
+        },
+
+        overlayClickListener(overlayId, modalId) {
+            const audioPlayer = document.getElementById("audioPlayer");
+            const overlay = audioPlayer.querySelector(`#${overlayId}`);
+            overlay.addEventListener('click', this.hideModal(overlayId, modalId));
+        },
+
+        hideModal(overlayId, modalId) {
+            return () => {
+                const audioPlayer = document.getElementById("audioPlayer");
+                const overlay = audioPlayer.querySelector(`#${overlayId}`);
+                const modal = audioPlayer.querySelector(`#${modalId}`);
+                modal.style.visibility = "hidden"
+                modal.style.opacity = "0"
+                overlay.removeEventListener('click', this.hideModal(overlayId, modalId))
+            }
+        },
+
+        addToFavourites() {
+            api.put(`http://music.local/api/favourite/songs/add-to-favourites/${this.getCurrentSong.id}`)
+            this.getCurrentSong.isFavourite = true
+        },
+
+        removeFromFavourites() {
+            api.put(`http://music.local/api/favourite/songs/delete-from-favourites/${this.getCurrentSong.id}`)
+            this.getCurrentSong.isFavourite = false
         },
     },
 }

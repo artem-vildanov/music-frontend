@@ -24,12 +24,8 @@
             </div>
         </nav>
 
-
-        
-        
         <router-view class="container"></router-view>
-        
-        
+                
         <div v-if="audioPlayerStatus" class="audio-player">
             <AudioPlayer/>
         </div>

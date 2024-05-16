@@ -3,7 +3,7 @@
 
         <div class="song-photo-container">
             <div class="song-photo-overlay">
-                <div @click.prevent="playSong({ songId: song.id, songsCollection: $parent.$data.songsCollection })" class="play-audio-action">
+                <div @click.prevent="playSong()" class="play-audio-action">
                     <img class="icon select-none" src="../../icons/play.svg">
                 </div>
             </div>
@@ -115,9 +115,16 @@ import { mapActions, mapGetters, mapMutations } from 'vuex';
                 'enqueueSong',
             ]),
 
-            ...mapActions([
-                'playSong',
-            ]),
+            ...mapActions({
+                playSongMakeQueue: 'playSong',
+            }),
+
+            playSong() {
+                const songId = this.song.id;
+                const songsQueue = this.$parent.$data.songsCollection;
+                const playPromise = this.playSongMakeQueue({ songId: songId, songsCollection: songsQueue});
+                playPromise.catch(error => console.log(error.message));
+            },
 
             openModalEditSong() {
                 const overlayId = "editSongModalOverlay";

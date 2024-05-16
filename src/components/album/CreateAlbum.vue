@@ -18,8 +18,8 @@
             
             <div class="select-image-and-publish-time">
                 <div class="select-image">
-                    <label for="imageInput" class="input-image-label">Выбрать обложку</label>
-                    <input id="imageInput" type="file" accept="image/png">
+                    <label for="albumImageInput" class="input-image-label">Выбрать обложку</label>
+                    <input id="albumImageInput" type="file" accept="image/png">
                     <img id="imagePreview" src="" class="image-preview">     
                 </div>
                 <div class="select-publish-time">
@@ -65,6 +65,10 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
             }
         },
 
+        watch: {
+            
+        },
+
         methods: {
             onMounted() {
                 this.imgInputPreview();
@@ -78,9 +82,9 @@ import SelectGenre from '@/components/genre/SelectGenre.vue'
 
             imgInputPreview() {
                 const createAlbum = document.querySelector('.create-album');
-                const fileInput = createAlbum.querySelector('#imageInput');
+                const fileInput = createAlbum.querySelector('#albumImageInput');
                 const imagePreview = createAlbum.querySelector('#imagePreview');
-
+                console.log(fileInput);
                 fileInput.addEventListener('change', (event) => {
                     this.albumImage = event.target.files[0];
                     imagePreview.src = URL.createObjectURL(this.albumImage);

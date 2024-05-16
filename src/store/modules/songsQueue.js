@@ -30,7 +30,7 @@ const songsQueue = {
             state.songsQueue = state.songsQueue.filter(song => song.id !== songId);
         },
         setQueue(state, songsCollection) {
-            state.songsQueue = songsCollection;
+            state.songsQueue = [...songsCollection];
         },
         setQueuePointer(state, index) {
             state.queuePointer = index;
